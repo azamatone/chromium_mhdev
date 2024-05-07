@@ -250,7 +250,6 @@ Compress-libchrome-to-free-up-some-space.patch
 Cromite-Branding.patch
 Disable-Feeback-Collector.patch
 Disable-remote-altsvc-for-h3-connections.patch
-do-not-block-build-incompatible-profiles.patch
 Allow-DocumentPiP-if-PopupsAndRedirects-are-active.patch
 allow-the-download-of-clang-for-windows-crossbuild.patch
 Add-option-to-disable-snapshots.patch
