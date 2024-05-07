@@ -1,0 +1,22 @@
+From 754033a9c75b35a7f37595908876974f530a5c23 Mon Sep 17 00:00:00 2001
+From: Yawm SDK <azureuser@yawm-2-vm.sienciuyguvrf.cloudapp.net>
+Date: Wed, 24 Apr 2024 13:56:58 +0000
+Subject: [YAWM] Enable WEBGL in site setttings by default
+
+---
+ .../core/browser/bromite_content_settings/webgl.inc             | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/content_settings/core/browser/bromite_content_settings/webgl.inc b/components/content_settings/core/browser/bromite_content_settings/webgl.inc
+index 3ff01832baef4..dd88ffeab7bbb 100644
+--- a/components/content_settings/core/browser/bromite_content_settings/webgl.inc
++++ b/components/content_settings/core/browser/bromite_content_settings/webgl.inc
+@@ -1,4 +1,4 @@
+-  Register(ContentSettingsType::WEBGL, "webgl", CONTENT_SETTING_BLOCK,
++  Register(ContentSettingsType::WEBGL, "webgl", CONTENT_SETTING_ALLOW,
+            WebsiteSettingsInfo::SYNCABLE,
+            /*allowlisted_schemes=*/{},
+            /*valid_settings=*/{CONTENT_SETTING_ALLOW,
+-- 
+2.34.1
+
