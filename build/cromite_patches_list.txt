@@ -276,7 +276,6 @@ Chrome-web-store-protection.patch
 Enable-search-engine-settings-desktop-ui.patch
 Disable-Android-AppRestrictions.patch
 Customize-selection-popup.patch
-Enables-deactivation-of-the-js-debugger-statement.patch
 Enable-gwp-asan-on-Android.patch
 Disable-Read-Aloud-by-default.patch
 Disable-Compose-feature.patch
