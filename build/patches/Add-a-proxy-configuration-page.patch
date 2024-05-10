@@ -38,9 +38,9 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
  .../proxy_config/proxy_config_dictionary.cc   |  30 +-
  .../proxy_config/proxy_config_dictionary.h    |   7 +-
  .../proxy_config/proxy_policy_handler.cc      |   2 +-
- net/proxy_resolution/proxy_config.cc          |  52 ++-
+ net/proxy_resolution/proxy_config.cc          |  51 ++-
  net/proxy_resolution/proxy_config.h           |   3 +
- 25 files changed, 981 insertions(+), 17 deletions(-)
+ 25 files changed, 980 insertions(+), 17 deletions(-)
  create mode 100644 chrome/browser/resources/proxy_config.css
  create mode 100644 chrome/browser/resources/proxy_config.html
  create mode 100644 chrome/browser/resources/proxy_config.js
@@ -1342,16 +1342,11 @@ diff --git a/net/proxy_resolution/proxy_config.cc b/net/proxy_resolution/proxy_c
        }
  
        // Trim whitespace off the url scheme.
-@@ -140,6 +140,56 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
+@@ -140,6 +140,55 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
    }
  }
  
 +std::string ProxyConfig::ProxyRules::ToString() const {
-+  if (type == Type::EMPTY) {
-+    return "";
-+  }
-+
-+  // special case: a single proxy servers list specified
 +  if (type == Type::PROXY_LIST) {
 +    std::string proxy_list;
 +    for (const auto& proxy_chain : single_proxies.AllChains()) {
@@ -1363,37 +1358,41 @@ diff --git a/net/proxy_resolution/proxy_config.cc b/net/proxy_resolution/proxy_c
 +      proxy_list.pop_back();
 +    }
 +    return proxy_list;
-+  }
-+
-+  if (type != Type::PROXY_LIST_PER_SCHEME) {
-+    NOTREACHED();
-+    // Unexpected LIST with fallback, or other type values
++  } else if (type == Type::PROXY_LIST_PER_SCHEME) {
++    // start to build a per-scheme list
++    std::string list;
++    for (const auto& proxy_chain : proxies_for_http.AllChains()) {
++      if (proxy_chain.length()) {
++        net::ProxyServer proxy_server = proxy_chain.First();
++        list += "http=" + ProxyServerToProxyUri(proxy_server) + ";";
++      }
++    }
++    for (const auto& proxy_chain : proxies_for_https.AllChains()) {
++      if (proxy_chain.length()) {
++        net::ProxyServer proxy_server = proxy_chain.First();
++        list += "https=" + ProxyServerToProxyUri(proxy_server) + ";";
++      }
++    }
++    for (const auto& proxy_chain : proxies_for_ftp.AllChains()) {
++      if (proxy_chain.length()) {
++        net::ProxyServer proxy_server = proxy_chain.First();
++        list += "ftp=" + ProxyServerToProxyUri(proxy_server) + ";";
++      }
++    }
++    for (const auto& proxy_chain : fallback_proxies.AllChains()) {
++      if (proxy_chain.length()) {
++        net::ProxyServer proxy_server = proxy_chain.First();
++        list += "socks=" + ProxyServerToProxyUri(proxy_server) + ";";
++      }
++    }
++    if (list.length() != 0 ) {
++      // remove last semicolon
++      list.pop_back();
++    }
++    return list;
++  } else {
 +    return "";
 +  }
-+
-+  // start to build a per-scheme list
-+  std::string list;
-+  for (const auto& proxy_chain : proxies_for_http.AllChains()) {
-+    net::ProxyServer proxy_server = proxy_chain.GetProxyServer(/*chain_index=*/0);
-+    list += "http=" + ProxyServerToProxyUri(proxy_server) + ";";
-+  }
-+  for (const auto& proxy_chain : proxies_for_https.AllChains()) {
-+    net::ProxyServer proxy_server = proxy_chain.GetProxyServer(/*chain_index=*/0);
-+    list += "https=" + ProxyServerToProxyUri(proxy_server) + ";";
-+  }
-+  for (const auto& proxy_chain : proxies_for_ftp.AllChains()) {
-+    net::ProxyServer proxy_server = proxy_chain.GetProxyServer(/*chain_index=*/0);
-+    list += "ftp=" + ProxyServerToProxyUri(proxy_server) + ";";
-+  }
-+  for (const auto& proxy_chain : fallback_proxies.AllChains()) {
-+    net::ProxyServer proxy_server = proxy_chain.GetProxyServer(/*chain_index=*/0);
-+    list += "socks=" + ProxyServerToProxyUri(proxy_server) + ";";
-+  }
-+  if (list.length() != 0 ) {
-+    // remove last semicolon
-+    list.pop_back();
-+  }
-+  return list;
 +}
 +
  const ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyList(

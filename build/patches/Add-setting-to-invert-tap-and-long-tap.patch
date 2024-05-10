@@ -48,9 +48,9 @@ diff --git a/chrome/android/java/res/values/ids.xml b/chrome/android/java/res/va
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettings.java b/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettings.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettings.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettings.java
-@@ -53,6 +53,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
-     static final String PREF_MOVE_TOOLBAR_TO_BOTTOM = "move_toolbar_bottom";
+@@ -55,6 +55,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
      private BooleanPreferenceDelegate mMoveTopToolbarToBottomDelegate;
+     private BooleanPreferenceDelegate mDisableToolbarSwipeUpDelegate;
  
 +    static final String PREF_ALWAYS_SHOW_CONTEXTMENU_ON_LINKS = "always_show_contextmenu_on_links";
 +    private BooleanPreferenceDelegate mShowAlwaysContextMenuOnLinksDelegate;
@@ -58,9 +58,9 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/s
      private TextScalePreference mTextScalePref;
      private PageZoomPreference mPageZoomDefaultZoomPref;
      private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
-@@ -166,6 +169,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
-         mMoveToolbarToBottomPref.setChecked(mMoveTopToolbarToBottomDelegate.isEnabled());
-         mMoveToolbarToBottomPref.setOnPreferenceChangeListener(this);
+@@ -174,6 +177,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
+         mDisableToolbarSwipeUpPref.setChecked(mDisableToolbarSwipeUpDelegate.isEnabled());
+         mDisableToolbarSwipeUpPref.setOnPreferenceChangeListener(this);
  
 +        ChromeSwitchPreference mShowAlwaysContextMenuOnLinksPref =
 +                (ChromeSwitchPreference) findPreference(PREF_ALWAYS_SHOW_CONTEXTMENU_ON_LINKS);
@@ -71,10 +71,10 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/s
          Preference captions = findPreference(PREF_CAPTIONS);
          captions.setOnPreferenceClickListener(
                  preference -> {
-@@ -251,6 +260,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
-         } else if (PREF_MOVE_TOOLBAR_TO_BOTTOM.equals(preference.getKey())) {
-             mMoveTopToolbarToBottomDelegate.setEnabled((Boolean) newValue);
+@@ -262,6 +271,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
              mDelegate.requestRestart(getActivity());
+         } else if (PREF_DISABLE_TOOLBAR_SWIPE_UP.equals(preference.getKey())) {
+             mDisableToolbarSwipeUpDelegate.setEnabled((Boolean) newValue);
 +        } else if (PREF_ALWAYS_SHOW_CONTEXTMENU_ON_LINKS.equals(preference.getKey())) {
 +            mShowAlwaysContextMenuOnLinksDelegate.setEnabled((Boolean) newValue);
 +            mDelegate.requestRestart(getActivity());
@@ -84,7 +84,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/s
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java b/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java
-@@ -118,6 +118,24 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
+@@ -136,6 +136,24 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
              mSnackbarManager.showSnackbar(mSnackbar);
      }
  
@@ -194,7 +194,7 @@ diff --git a/chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/con
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -281,6 +281,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -283,6 +283,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &kTabGroupParityAndroid,
      &kTabletTabSwitcherLongPressMenu,
      &kTabletToolbarIncognitoStatus,
@@ -205,8 +205,8 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -340,6 +340,8 @@ public abstract class ChromeFeatureList {
-     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
+@@ -342,6 +342,8 @@ public abstract class ChromeFeatureList {
+             "DisableToolbarSwipeUp";
      public static final String MOVE_TOP_TOOLBAR_TO_BOTTOM =
              "MoveTopToolbarToBottom";
 +    public static final String SHOW_ALWAYS_CONTEXT_MENU_ON_LINKS =
@@ -214,8 +214,8 @@ diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/f
      public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
      public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
              "NotificationPermissionBottomSheet";
-@@ -624,6 +626,8 @@ public abstract class ChromeFeatureList {
-             newCachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
+@@ -628,6 +630,8 @@ public abstract class ChromeFeatureList {
+             newCachedFlag(DISABLE_TOOLBAR_SWIPE_UP, false);
      public static final CachedFlag sMoveTopToolbarToBottom =
              newCachedFlag(MOVE_TOP_TOOLBAR_TO_BOTTOM, false);
 +    public static final CachedFlag sShowAlwaysContextMenuOnLinks =
@@ -223,7 +223,7 @@ diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/f
      public static final CachedFlag sOmniboxModernizeVisualUpdate =
              newCachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
      public static final CachedFlag sOptimizationGuidePushNotifications =
-@@ -780,6 +784,7 @@ public abstract class ChromeFeatureList {
+@@ -785,6 +789,7 @@ public abstract class ChromeFeatureList {
                      sTabWindowManagerReportIndicesMismatch,
                      sToolbarUseHardwareBitmapDraw,
                      sUseChimeAndroidSdk,
@@ -235,8 +235,8 @@ diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chro
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 @@ -1678,6 +1678,12 @@ Your Google account may have other forms of browsing history like searches and a
-       <message name="IDS_MOVE_TOOLBAR_BOTTOM_SUMMARY" desc="Summary of the preference that allows the user to move toolbar on bottom.">
-         Move toolbar to bottom
+       <message name="IDS_DISABLE_TOOLBAR_SWIPE_UP" desc="Summary of the preference that allows the user to disable toolbar swipeup.">
+         Disable toolbar swipe up
        </message>
 +      <message name="IDS_ALWAYS_SHOW_CONTEXTMENU_ON_LINKS_TITLE" desc="Title of the preference that open the context menu in links.">
 +        Always open the context menu in the links
@@ -275,9 +275,9 @@ diff --git a/components/browser_ui/accessibility/android/java/res/xml/accessibil
 diff --git a/components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java b/components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java
 --- a/components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java
 +++ b/components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java
-@@ -38,6 +38,8 @@ public interface AccessibilitySettingsDelegate {
- 
+@@ -39,6 +39,8 @@ public interface AccessibilitySettingsDelegate {
      BooleanPreferenceDelegate getMoveTopToolbarToBottomDelegate();
+     BooleanPreferenceDelegate getDisableToolbarSwipeUpDelegate();
  
 +    BooleanPreferenceDelegate getShowAlwaysContextMenuOnLinksDelegate();
 +

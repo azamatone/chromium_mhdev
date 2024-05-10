@@ -153,11 +153,10 @@ new file mode 100644
 diff --git a/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml b/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
 --- a/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
 +++ b/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
-@@ -68,4 +68,28 @@ found in the LICENSE file.
-         android:key="move_toolbar_bottom"
-         android:summary="@string/move_toolbar_bottom_summary"
-         android:title="@string/move_toolbar_bottom_title" />
-+
+@@ -72,4 +72,28 @@ found in the LICENSE file.
+         android:key="disable_toolbar_swipeup"
+         android:title="@string/disable_toolbar_swipe_up" />
+ 
 +    <PreferenceCategory
 +        android:key="customize_selecton_popup_section"
 +        android:title="@string/customize_selecton_popup_title" />
@@ -181,6 +180,7 @@ diff --git a/components/browser_ui/accessibility/android/java/res/xml/accessibil
 +        android:key="selection_popup_smart_text"
 +        android:summary="@string/selection_popup_smart_text_summary"
 +        android:title="@string/selection_popup_smart_text_title" />
++
  </PreferenceScreen>
 diff --git a/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java b/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java
 --- a/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java

@@ -531,7 +531,7 @@ new file mode 100644
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java b/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java
-@@ -94,6 +94,11 @@ import org.chromium.chrome.browser.preferences.Pref;
+@@ -88,6 +88,11 @@ import org.chromium.chrome.browser.preferences.Pref;
  import org.chromium.chrome.browser.profiles.ProfileManager;
  import org.chromium.components.user_prefs.UserPrefs;
  
@@ -543,7 +543,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.jav
  /**
   * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
   * class is not intended to be extended.
-@@ -632,6 +637,32 @@ class TabImpl implements Tab {
+@@ -626,6 +631,32 @@ class TabImpl implements Tab {
                  params.setOverrideUserAgent(calculateUserAgentOverrideOption(null));
              }
  
@@ -576,7 +576,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.jav
              LoadUrlResult result = loadUrlInternal(params, fixedUrl);
  
              for (TabObserver observer : mObservers) {
-@@ -1597,9 +1628,17 @@ class TabImpl implements Tab {
+@@ -1591,9 +1622,17 @@ class TabImpl implements Tab {
  
              mWebContents.setImportance(mImportance);
  
@@ -595,7 +595,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.jav
  
              mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
              updateInteractableState();
-@@ -1790,6 +1829,10 @@ class TabImpl implements Tab {
+@@ -1760,6 +1799,10 @@ class TabImpl implements Tab {
              }
              mIsBeingRestored = true;
              for (TabObserver observer : mObservers) observer.onRestoreStarted(this);
@@ -606,7 +606,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.jav
          } finally {
              TraceEvent.end("Tab.restoreIfNeeded");
          }
-@@ -2054,6 +2097,13 @@ class TabImpl implements Tab {
+@@ -2039,6 +2082,13 @@ class TabImpl implements Tab {
      }
  
      private @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
@@ -620,7 +620,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.jav
          WebContents webContents = getWebContents();
          boolean currentRequestDesktopSite = TabUtils.isUsingDesktopUserAgent(webContents);
          @TabUserAgent int tabUserAgent = TabUtils.getTabUserAgent(this);
-@@ -2135,6 +2185,48 @@ class TabImpl implements Tab {
+@@ -2120,6 +2170,48 @@ class TabImpl implements Tab {
          }
      }
  

@@ -28,6 +28,7 @@ chrome/renderer/chrome_content_renderer_client.cc
 
 content/child/runtime_features.cc
 content/public/browser/content_browser_client.cc
+content/browser/web_contents/web_contents_impl.cc
 
 services/network/network_context.cc
 
