@@ -305,3 +305,4 @@ YAWM-Port-NSFW-filtering-and-Cromite-Adblocker.patch
 YAWM-Increase-the-video-processing-frequency.patch
 YAWM-Enable-WEBGL-in-site-setttings-by-default.patch
 YAWM-Fix-NSFW-Youtube-filtering-bug.patch
+YAWM-Connect-NSFW-filter-to-profile-preferences.patch
