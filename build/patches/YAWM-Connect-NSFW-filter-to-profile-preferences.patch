@@ -135,18 +135,6 @@ index f1ac69b2a22fa..1fe43abe4bc7a 100644
  }
  }  // namespace
  
-diff --git a/chrome/browser/addons/nsfw/nsfw.h b/chrome/browser/addons/nsfw/nsfw.h
-index 6a6011c3232c9..f31469003235b 100644
---- a/chrome/browser/addons/nsfw/nsfw.h
-+++ b/chrome/browser/addons/nsfw/nsfw.h
-@@ -24,4 +24,4 @@ class NSFWTabHelper
- };
- 
- 
--#endif // CHROME_ANDROID_COMPONENTS_NSFW_NSFW_H_
-\ No newline at end of file
-+#endif // CHROME_ANDROID_COMPONENTS_NSFW_NSFW_H_ 
-\ No newline at end of file
 diff --git a/chrome/browser/profiles/profile_impl.cc b/chrome/browser/profiles/profile_impl.cc
 index fba4a6513f98d..31187b053490c 100644
 --- a/chrome/browser/profiles/profile_impl.cc
