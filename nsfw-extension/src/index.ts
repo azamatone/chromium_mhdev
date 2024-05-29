@@ -13,8 +13,8 @@ function domReady(cb: Function): void {
         });
     }
 }
-
-let counter = new NoopCounter();
+// @ts-ignore
+let counter = counter || new NoopCounter();
 
 loadModel('https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mobilenet_v2/').then(nsfwModel => {
     domReady(()=>{
