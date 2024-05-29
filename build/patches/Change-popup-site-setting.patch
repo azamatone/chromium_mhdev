@@ -12,9 +12,9 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
  components/blocked_content_strings.grdp       |   3 +
  .../impl/BromitePopupContentSetting.java      | 106 ++++++++++++++++++
  .../bromite_content_settings/popups.grdp      |  12 ++
- .../bromite_content_settings/popups.inc       |   7 ++
+ .../bromite_content_settings/popups.inc       |   8 ++
  .../core/browser/content_settings_registry.cc |   2 +-
- 8 files changed, 151 insertions(+), 3 deletions(-)
+ 8 files changed, 152 insertions(+), 3 deletions(-)
  create mode 100644 components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/impl/BromitePopupContentSetting.java
  create mode 100644 components/browser_ui/strings/bromite_content_settings/popups.grdp
  create mode 100644 components/content_settings/core/browser/bromite_content_settings/popups.inc
@@ -239,18 +239,19 @@ diff --git a/components/content_settings/core/browser/bromite_content_settings/p
 new file mode 100644
 --- /dev/null
 +++ b/components/content_settings/core/browser/bromite_content_settings/popups.inc
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,8 @@
 +  content_settings::WebsiteSettingsRegistry::GetInstance()
 +    ->GetMutable(ContentSettingsType::POPUPS)
 +    ->set_show_into_info_page()
 +    .set_desktop_ui()
++    .set_is_renderer_content_setting()
 +    .set_allowed_ui(IDS_WEBSITE_SETTINGS_CATEGORY_POPUP_ALLOWED)
 +    .set_ask_ui(IDS_WEBSITE_SETTINGS_CATEGORY_POPUP_BLOCK_ALL)
 +    .set_blocked_ui(IDS_WEBSITE_SETTINGS_CATEGORY_POPUP_BLOCKED);
 diff --git a/components/content_settings/core/browser/content_settings_registry.cc b/components/content_settings/core/browser/content_settings_registry.cc
 --- a/components/content_settings/core/browser/content_settings_registry.cc
 +++ b/components/content_settings/core/browser/content_settings_registry.cc
-@@ -131,7 +131,7 @@ void ContentSettingsRegistry::Init() {
+@@ -134,7 +134,7 @@ void ContentSettingsRegistry::Init() {
             WebsiteSettingsInfo::SYNCABLE,
             /*allowlisted_primary_schemes=*/
             {kChromeUIScheme, kChromeDevToolsScheme, kExtensionScheme},

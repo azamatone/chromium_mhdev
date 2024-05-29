@@ -34,7 +34,7 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
 diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
 --- a/chrome/android/chrome_java_resources.gni
 +++ b/chrome/android/chrome_java_resources.gni
-@@ -585,6 +585,7 @@ chrome_java_resources = [
+@@ -581,6 +581,7 @@ chrome_java_resources = [
    "java/res/layout/signin_activity.xml",
    "java/res/layout/status_indicator_container.xml",
    "java/res/layout/suggestions_tile_view_condensed.xml",
@@ -45,7 +45,7 @@ diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_ja
 diff --git a/chrome/android/chrome_java_sources.gni b/chrome/android/chrome_java_sources.gni
 --- a/chrome/android/chrome_java_sources.gni
 +++ b/chrome/android/chrome_java_sources.gni
-@@ -1050,6 +1050,7 @@ chrome_java_sources = [
+@@ -1048,6 +1048,7 @@ chrome_java_sources = [
    "java/src/org/chromium/chrome/browser/signin/SyncConsentActivity.java",
    "java/src/org/chromium/chrome/browser/signin/SyncConsentActivityLauncherImpl.java",
    "java/src/org/chromium/chrome/browser/signin/SyncConsentFragment.java",
@@ -56,7 +56,7 @@ diff --git a/chrome/android/chrome_java_sources.gni b/chrome/android/chrome_java
 diff --git a/chrome/android/java/AndroidManifest.xml b/chrome/android/java/AndroidManifest.xml
 --- a/chrome/android/java/AndroidManifest.xml
 +++ b/chrome/android/java/AndroidManifest.xml
-@@ -242,12 +242,6 @@ by a child template that "extends" this file.
+@@ -245,12 +245,6 @@ by a child template that "extends" this file.
                  <data android:mimeType="text/plain"/>
                  <data android:mimeType="application/xhtml+xml"/>
              </intent-filter>
@@ -69,7 +69,7 @@ diff --git a/chrome/android/java/AndroidManifest.xml b/chrome/android/java/Andro
              <!-- content URI support. -->
              <intent-filter>
                  <action android:name="android.intent.action.VIEW" />
-@@ -326,6 +320,10 @@ by a child template that "extends" this file.
+@@ -329,6 +323,10 @@ by a child template that "extends" this file.
                  <action android:name="android.intent.action.MEDIA_SEARCH" />
                  <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
@@ -80,7 +80,7 @@ diff --git a/chrome/android/java/AndroidManifest.xml b/chrome/android/java/Andro
              <intent-filter>
                  <action android:name="android.speech.action.VOICE_SEARCH_RESULTS" />
                  <category android:name="android.intent.category.DEFAULT" />
-@@ -362,6 +360,24 @@ by a child template that "extends" this file.
+@@ -365,6 +363,24 @@ by a child template that "extends" this file.
              </intent-filter>
          </activity>
  
@@ -241,7 +241,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.j
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java b/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java
-@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.intents.BrowserIntentUtils;
  import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
  import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
  import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -249,7 +249,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDis
  import org.chromium.chrome.browser.searchwidget.SearchActivity;
  import org.chromium.chrome.browser.tab.Tab;
  import org.chromium.chrome.browser.util.AndroidTaskUtils;
-@@ -200,11 +201,22 @@ public class LaunchIntentDispatcher {
+@@ -199,11 +200,22 @@ public class LaunchIntentDispatcher {
  
          String query = null;
          final String action = intent.getAction();
@@ -272,7 +272,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDis
  
          // Only the ChromeLauncherActivity can handle search intents. Drop the intent and abort the
          // launch.
-@@ -429,8 +441,8 @@ public class LaunchIntentDispatcher {
+@@ -425,8 +437,8 @@ public class LaunchIntentDispatcher {
                      /*incognito*/true);
                  newIntent.setData(mIntent.getData());
                  newIntent.setPackage(applicationContext.getPackageName());
@@ -469,7 +469,7 @@ new file mode 100644
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -258,6 +258,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -263,6 +263,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &kReengagementNotification,
      &kSearchReadyOmniboxFeature,
      &kRelatedSearchesAllLanguage,
@@ -480,7 +480,7 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -402,6 +402,7 @@ public abstract class ChromeFeatureList {
+@@ -408,6 +408,7 @@ public abstract class ChromeFeatureList {
      public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
              "ReadAloudIPHMenuButtonHighlightCCT";
      public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
@@ -491,8 +491,8 @@ diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/f
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -5278,6 +5278,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
-         Copied to your clipboard
+@@ -5282,6 +5282,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
+         Make sure a phone app is enabled on this device
        </message>
  
 +      <message name="IDS_SHARED_INTENT_SHARE_ACTIVITY_TITLE" desc="Text that will appear in the Android share dialog to open an URL with Bromite.">

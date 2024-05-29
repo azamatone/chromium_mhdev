@@ -88,7 +88,7 @@ diff --git a/chrome/common/logging_chrome.h b/chrome/common/logging_chrome.h
 diff --git a/content/app/content_main.cc b/content/app/content_main.cc
 --- a/content/app/content_main.cc
 +++ b/content/app/content_main.cc
-@@ -314,7 +314,11 @@ RunContentProcess(ContentMainParams params,
+@@ -311,7 +311,11 @@ RunContentProcess(ContentMainParams params,
        base::RouteStdioToConsole(/*create_console_if_not_found*/ false);
      } else if (command_line->HasSwitch(switches::kEnableLogging)) {
        // Route stdio to parent console (if any) or create one.

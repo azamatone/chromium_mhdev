@@ -12,7 +12,7 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 diff --git a/chrome/browser/net/profile_network_context_service.cc b/chrome/browser/net/profile_network_context_service.cc
 --- a/chrome/browser/net/profile_network_context_service.cc
 +++ b/chrome/browser/net/profile_network_context_service.cc
-@@ -382,7 +382,7 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
+@@ -429,7 +429,7 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
  void ProfileNetworkContextService::RegisterProfilePrefs(
      user_prefs::PrefRegistrySyncable* registry) {
    registry->RegisterBooleanPref(embedder_support::kAlternateErrorPagesEnabled,
@@ -37,7 +37,7 @@ diff --git a/chrome/browser/ssl/chrome_security_blocking_page_factory.cc b/chrom
 -  content::OpenURLParams params(GURL(url), content::Referrer(),
 -                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
 -                                ui::PAGE_TRANSITION_LINK, false);
--  web_contents->OpenURL(params);
+-  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 -#else
 -  ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(web_contents,
 -                                                                true);

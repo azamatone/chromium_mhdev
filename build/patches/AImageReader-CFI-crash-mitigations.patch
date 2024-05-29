@@ -90,8 +90,8 @@ diff --git a/base/android/android_image_reader_compat.h b/base/android/android_i
 diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
 --- a/chrome/browser/flag-metadata.json
 +++ b/chrome/browser/flag-metadata.json
-@@ -3101,9 +3101,9 @@
-     "expiry_milestone": 125
+@@ -3186,9 +3186,9 @@
+     "expiry_milestone": 135
    },
    {
 -    "name": "enable-image-reader",
@@ -183,7 +183,7 @@ diff --git a/gpu/config/gpu_util.cc b/gpu/config/gpu_util.cc
    if (!gpu_preferences.enable_android_surface_control)
      return kGpuFeatureStatusDisabled;
  
-@@ -390,6 +393,11 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info) {
+@@ -385,6 +388,11 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info) {
      gpu_feature_info->status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
          kGpuFeatureStatusBlocklisted;
    }
@@ -217,7 +217,7 @@ diff --git a/gpu/ipc/service/gpu_init.cc b/gpu/ipc/service/gpu_init.cc
  #endif
  
  #if BUILDFLAG(ENABLE_VULKAN)
-@@ -708,6 +709,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
+@@ -723,6 +724,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
    }
  #endif  // BUILDFLAG(IS_WIN)
  

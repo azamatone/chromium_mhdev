@@ -11,10 +11,10 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
-@@ -1429,8 +1429,6 @@ static_library("ui") {
-       "singleton_tabs.h",
-       "startup/automation_infobar_delegate.cc",
-       "startup/automation_infobar_delegate.h",
+@@ -1458,8 +1458,6 @@ static_library("ui") {
+       "startup/default_browser_infobar_delegate.h",
+       "startup/default_browser_prompt_manager.cc",
+       "startup/default_browser_prompt_manager.h",
 -      "startup/google_api_keys_infobar_delegate.cc",
 -      "startup/google_api_keys_infobar_delegate.h",
        "startup/infobar_utils.cc",

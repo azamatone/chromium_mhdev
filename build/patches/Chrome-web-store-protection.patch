@@ -75,10 +75,10 @@ diff --git a/chrome/browser/extensions/api/developer_private/developer_private_a
 +#include "components/flags_ui/feature_entry.h"
 +#include "components/flags_ui/flags_storage.h"
 +
- #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
- #include "components/supervised_user/core/browser/supervised_user_preferences.h"
- #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-@@ -476,9 +482,32 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
+ namespace extensions {
+ 
+ namespace developer = api::developer_private;
+@@ -466,9 +472,32 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
    info->can_load_unpacked =
        ExtensionManagementFactory::GetForBrowserContext(profile)
            ->HasAllowlistedExtension();
@@ -111,7 +111,7 @@ diff --git a/chrome/browser/extensions/api/developer_private/developer_private_a
  template <>
  void BrowserContextKeyedAPIFactory<
      DeveloperPrivateAPI>::DeclareFactoryDependencies() {
-@@ -908,6 +937,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
+@@ -898,6 +927,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
      ExtensionUpdater::CheckParams params;
      params.fetch_priority = DownloadFetchPriority::kForeground;
      params.install_immediately = true;
@@ -119,7 +119,7 @@ diff --git a/chrome/browser/extensions/api/developer_private/developer_private_a
      params.callback =
          base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete, this);
      updater->CheckNow(std::move(params));
-@@ -1048,7 +1078,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
+@@ -1038,7 +1068,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
  
    const developer::ProfileConfigurationUpdate& update = params->update;
  
@@ -127,8 +127,8 @@ diff --git a/chrome/browser/extensions/api/developer_private/developer_private_a
 +  if (update.in_developer_mode.has_value() && update.in_developer_mode) {
      Profile* profile = Profile::FromBrowserContext(browser_context());
      CHECK(profile);
- #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-@@ -1060,6 +1090,11 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
+     if (supervised_user::AreExtensionsPermissionsEnabled(
+@@ -1048,6 +1078,11 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
      util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
    }
  
@@ -156,7 +156,7 @@ diff --git a/chrome/browser/extensions/api/developer_private/developer_private_a
 diff --git a/chrome/browser/extensions/api/webstore_private/webstore_private_api.cc b/chrome/browser/extensions/api/webstore_private/webstore_private_api.cc
 --- a/chrome/browser/extensions/api/webstore_private/webstore_private_api.cc
 +++ b/chrome/browser/extensions/api/webstore_private/webstore_private_api.cc
-@@ -61,6 +61,7 @@
+@@ -63,6 +63,7 @@
  #include "extensions/browser/extension_system.h"
  #include "extensions/browser/extension_util.h"
  #include "extensions/common/extension.h"
@@ -164,7 +164,7 @@ diff --git a/chrome/browser/extensions/api/webstore_private/webstore_private_api
  #include "extensions/common/manifest.h"
  #include "extensions/common/manifest_constants.h"
  #include "extensions/common/manifest_handlers/permissions_parser.h"
-@@ -227,12 +228,16 @@ WebstorePrivateApi::Delegate* test_delegate = nullptr;
+@@ -220,12 +221,16 @@ WebstorePrivateApi::Delegate* test_delegate = nullptr;
  // there was previously stored data, or an empty string otherwise. The Set will
  // overwrite any previous login.
  std::string GetWebstoreLogin(Profile* profile) {
@@ -181,7 +181,7 @@ diff --git a/chrome/browser/extensions/api/webstore_private/webstore_private_api
    profile->GetPrefs()->SetString(kWebstoreLogin, login);
  }
  
-@@ -242,6 +247,8 @@ void RecordWebstoreExtensionInstallResult(bool success) {
+@@ -235,6 +240,8 @@ void RecordWebstoreExtensionInstallResult(bool success) {
  
  api::webstore_private::ExtensionInstallStatus
  ConvertExtensionInstallStatusForAPI(ExtensionInstallStatus status) {
@@ -190,7 +190,7 @@ diff --git a/chrome/browser/extensions/api/webstore_private/webstore_private_api
    switch (status) {
      case kCanRequest:
        return api::webstore_private::ExtensionInstallStatus::kCanRequest;
-@@ -1199,7 +1206,8 @@ ExtensionFunction::ResponseAction
+@@ -1150,7 +1157,8 @@ ExtensionFunction::ResponseAction
  WebstorePrivateIsInIncognitoModeFunction::Run() {
    Profile* profile = Profile::FromBrowserContext(browser_context());
    return RespondNow(ArgumentList(IsInIncognitoMode::Results::Create(
@@ -200,7 +200,7 @@ diff --git a/chrome/browser/extensions/api/webstore_private/webstore_private_api
  }
  
  WebstorePrivateIsPendingCustodianApprovalFunction::
-@@ -1298,11 +1306,14 @@ WebstorePrivateGetReferrerChainFunction::Run() {
+@@ -1245,11 +1253,14 @@ WebstorePrivateGetReferrerChainFunction::Run() {
    request.mutable_referrer_chain_options()->set_recent_navigations_to_collect(
        recent_navigations_to_collect);
  
@@ -539,7 +539,7 @@ diff --git a/chrome/browser/resources/extensions/toolbar.html b/chrome/browser/r
 diff --git a/chrome/browser/resources/extensions/toolbar.ts b/chrome/browser/resources/extensions/toolbar.ts
 --- a/chrome/browser/resources/extensions/toolbar.ts
 +++ b/chrome/browser/resources/extensions/toolbar.ts
-@@ -26,6 +26,8 @@ export interface ToolbarDelegate {
+@@ -25,6 +25,8 @@ export interface ToolbarDelegate {
     */
    setProfileInDevMode(inDevMode: boolean): void;
  
@@ -548,7 +548,7 @@ diff --git a/chrome/browser/resources/extensions/toolbar.ts b/chrome/browser/res
    /** Opens the dialog to load unpacked extensions. */
    loadUnpacked(): Promise<boolean>;
  
-@@ -72,6 +74,13 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+@@ -71,6 +73,13 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
          reflectToAttribute: true,
        },
  
@@ -562,7 +562,7 @@ diff --git a/chrome/browser/resources/extensions/toolbar.ts b/chrome/browser/res
        devModeControlledByPolicy: Boolean,
        isChildAccount: Boolean,
  
-@@ -88,6 +97,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+@@ -87,6 +96,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
  
        expanded_: Boolean,
        showPackDialog_: Boolean,
@@ -570,7 +570,7 @@ diff --git a/chrome/browser/resources/extensions/toolbar.ts b/chrome/browser/res
  
        /**
         * Prevents initiating update while update is in progress.
-@@ -99,6 +109,8 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+@@ -98,6 +108,8 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
    extensions: chrome.developerPrivate.ExtensionInfo[];
    delegate: ToolbarDelegate;
    inDevMode: boolean;
@@ -579,7 +579,7 @@ diff --git a/chrome/browser/resources/extensions/toolbar.ts b/chrome/browser/res
    devModeControlledByPolicy: boolean;
    isChildAccount: boolean;
  
-@@ -151,6 +163,14 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+@@ -150,6 +162,14 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
          'Options_ToggleDeveloperMode_' + (e.detail ? 'Enabled' : 'Disabled'));
    }
  
@@ -613,7 +613,7 @@ diff --git a/chrome/browser/resources/webstore_app/manifest.json b/chrome/browse
 diff --git a/chrome/browser/ui/webui/extensions/extensions_ui.cc b/chrome/browser/ui/webui/extensions/extensions_ui.cc
 --- a/chrome/browser/ui/webui/extensions/extensions_ui.cc
 +++ b/chrome/browser/ui/webui/extensions/extensions_ui.cc
-@@ -58,6 +58,8 @@
+@@ -59,6 +59,8 @@
  #include "chrome/browser/ui/webui/extensions/ash/kiosk_apps_handler.h"
  #endif
  
@@ -622,16 +622,16 @@ diff --git a/chrome/browser/ui/webui/extensions/extensions_ui.cc b/chrome/browse
  namespace extensions {
  
  namespace {
-@@ -340,6 +342,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
-     {"itemSuspiciousInstallLearnMore",
-      IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE_LEARN_MORE},
-     {"toolbarDevMode", IDS_EXTENSIONS_DEVELOPER_MODE},
-+    {"toolbarExtensionUpdateEnabled", IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED},
-+    {"toolbarExtensionUpdateEnabledNeedRestart", IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED_NR},
-     {"toolbarLoadUnpacked", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED},
-     {"toolbarLoadUnpackedDone", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED_DONE},
-     {"toolbarPack", IDS_EXTENSIONS_TOOLBAR_PACK},
-@@ -420,6 +424,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
+@@ -345,6 +347,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
+       {"itemSuspiciousInstallLearnMore",
+        IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE_LEARN_MORE},
+       {"toolbarDevMode", IDS_EXTENSIONS_DEVELOPER_MODE},
++      {"toolbarExtensionUpdateEnabled", IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED},
++      {"toolbarExtensionUpdateEnabledNeedRestart", IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED_NR},
+       {"toolbarLoadUnpacked", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED},
+       {"toolbarLoadUnpackedDone", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED_DONE},
+       {"toolbarPack", IDS_EXTENSIONS_TOOLBAR_PACK},
+@@ -418,6 +422,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
    source->AddString("hostPermissionsLearnMoreLink",
                      chrome_extension_constants::kRuntimeHostPermissionsHelpURL);
    source->AddBoolean(kInDevModeKey, in_dev_mode);
@@ -1110,8 +1110,8 @@ diff --git a/extensions/browser/updater/safe_manifest_parser.cc b/extensions/bro
 diff --git a/extensions/common/extension_features.cc b/extensions/common/extension_features.cc
 --- a/extensions/common/extension_features.cc
 +++ b/extensions/common/extension_features.cc
-@@ -158,4 +158,19 @@ BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
-              "DeclarativeNetRequestResponseHeaderMatching",
+@@ -162,4 +162,19 @@ BASE_FEATURE(kUseItemSnippetsAPI,
+              "UseItemSnippetsAPI",
               base::FEATURE_DISABLED_BY_DEFAULT);
  
 +// Activates the auto update of extensions.
@@ -1133,9 +1133,9 @@ diff --git a/extensions/common/extension_features.cc b/extensions/common/extensi
 diff --git a/extensions/common/extension_features.h b/extensions/common/extension_features.h
 --- a/extensions/common/extension_features.h
 +++ b/extensions/common/extension_features.h
-@@ -200,6 +200,10 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
- // matching condition.
- BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
+@@ -202,6 +202,10 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
+ // If enabled, use the new CWS itemSnippets API to fetch extension info.
+ BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
  
 +BASE_DECLARE_FEATURE(kEnableExtensionAutoupdate);
 +

@@ -19,10 +19,10 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.j
  import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
  import org.chromium.chrome.browser.flags.ChromeFeatureList;
 -import org.chromium.chrome.browser.gsa.GSAState;
- import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
  import org.chromium.chrome.browser.profiles.Profile;
  import org.chromium.chrome.browser.profiles.ProfileManager;
-@@ -255,8 +254,6 @@ public class IntentHandler {
+@@ -258,8 +257,6 @@ public class IntentHandler {
      private static int sReferrerId;
      private static String sPendingIncognitoUrl;
  
@@ -31,7 +31,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.j
      private static final String PACKAGE_GMAIL = "com.google.android.gm";
      private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
      private static final String PACKAGE_HANGOUTS = "com.google.android.talk";
-@@ -472,8 +469,6 @@ public class IntentHandler {
+@@ -475,8 +472,6 @@ public class IntentHandler {
              return ExternalAppId.LINE;
          } else if (packageName.equals(PACKAGE_WHATSAPP)) {
              return ExternalAppId.WHATSAPP;

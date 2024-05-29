@@ -44,7 +44,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/contextualsearc
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -186,6 +186,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &kCCTEmbedderSpecialBehaviorTrigger,
      &kCCTExtendTrustedCdnPublisher,
      &kCCTFeatureUsage,
@@ -55,7 +55,7 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -217,6 +217,7 @@ public abstract class ChromeFeatureList {
+@@ -227,6 +227,7 @@ public abstract class ChromeFeatureList {
      public static final String CCT_MINIMIZED_ENABLED_BY_DEFAULT = "CCTMinimizedEnabledByDefault";
      public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
      public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";

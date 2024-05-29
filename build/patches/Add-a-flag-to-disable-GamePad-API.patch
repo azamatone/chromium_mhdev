@@ -14,8 +14,8 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
 --- a/chrome/browser/flag-metadata.json
 +++ b/chrome/browser/flag-metadata.json
-@@ -7251,9 +7251,9 @@
-     "expiry_milestone": 125
+@@ -7333,9 +7333,9 @@
+     "expiry_milestone": 126
    },
    {
 -    "name": "restrict-gamepad-access",
@@ -29,7 +29,7 @@ diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.js
 diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -3083,7 +3083,7 @@ const char kResetShortcutCustomizationsDescription[] =
+@@ -3005,7 +3005,7 @@ const char kResetShortcutCustomizationsDescription[] =
  
  const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
  const char kRestrictGamepadAccessDescription[] =

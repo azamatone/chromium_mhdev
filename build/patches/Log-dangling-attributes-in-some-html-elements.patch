@@ -42,7 +42,7 @@ new file mode 100644
 diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
 --- a/third_party/blink/renderer/core/dom/document.cc
 +++ b/third_party/blink/renderer/core/dom/document.cc
-@@ -4799,6 +4799,14 @@ void Document::ProcessBaseElement() {
+@@ -4789,6 +4789,14 @@ void Document::ProcessBaseElement() {
    KURL base_element_url;
    if (href) {
      String stripped_href = StripLeadingAndTrailingHTMLSpaces(*href);
@@ -57,7 +57,7 @@ diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink
      if (!stripped_href.empty())
        base_element_url = KURL(FallbackBaseURL(), stripped_href);
    }
-@@ -4816,6 +4824,14 @@ void Document::ProcessBaseElement() {
+@@ -4806,6 +4814,14 @@ void Document::ProcessBaseElement() {
          !GetExecutionContext()->GetSecurityOrigin()->CanRequest(
              base_element_url)) {
        UseCounter::Count(*this, WebFeature::kBaseWithCrossOriginHref);
@@ -72,7 +72,7 @@ diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink
      }
    }
  
-@@ -4835,6 +4851,8 @@ void Document::ProcessBaseElement() {
+@@ -4825,6 +4841,8 @@ void Document::ProcessBaseElement() {
      if (target->Contains('<'))
        UseCounter::Count(*this, WebFeature::kBaseWithOpenBracketInTarget);
      base_target_ = *target;
@@ -84,7 +84,7 @@ diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink
 diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/renderer/core/dom/element.cc
 --- a/third_party/blink/renderer/core/dom/element.cc
 +++ b/third_party/blink/renderer/core/dom/element.cc
-@@ -2793,8 +2793,26 @@ void Element::StripScriptingAttributes(
+@@ -2861,8 +2861,26 @@ void Element::StripScriptingAttributes(
    attribute_vector.Shrink(destination);
  }
  
@@ -115,7 +115,7 @@ diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/
 diff --git a/third_party/blink/renderer/core/dom/element.h b/third_party/blink/renderer/core/dom/element.h
 --- a/third_party/blink/renderer/core/dom/element.h
 +++ b/third_party/blink/renderer/core/dom/element.h
-@@ -620,7 +620,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
+@@ -654,7 +654,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
    virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
  
    // Only called by the parser immediately after element construction.
@@ -214,7 +214,7 @@ diff --git a/third_party/blink/renderer/core/html/html_frame_element_base.cc b/t
 diff --git a/third_party/blink/renderer/core/html/html_iframe_element.cc b/third_party/blink/renderer/core/html/html_iframe_element.cc
 --- a/third_party/blink/renderer/core/html/html_iframe_element.cc
 +++ b/third_party/blink/renderer/core/html/html_iframe_element.cc
-@@ -159,6 +159,12 @@ void HTMLIFrameElement::CollectStyleForPresentationAttribute(
+@@ -161,6 +161,12 @@ void HTMLIFrameElement::CollectStyleForPresentationAttribute(
    }
  }
  
@@ -227,7 +227,7 @@ diff --git a/third_party/blink/renderer/core/html/html_iframe_element.cc b/third
  void HTMLIFrameElement::ParseAttribute(
      const AttributeModificationParams& params) {
    const QualifiedName& name = params.name;
-@@ -173,6 +179,16 @@ void HTMLIFrameElement::ParseAttribute(
+@@ -175,6 +181,16 @@ void HTMLIFrameElement::ParseAttribute(
      }
      AtomicString old_name = name_;
      name_ = value;
@@ -267,7 +267,7 @@ diff --git a/third_party/blink/renderer/core/loader/frame_load_request.cc b/thir
  #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
  #include "third_party/blink/renderer/core/frame/local_dom_window.h"
  #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-@@ -145,6 +146,14 @@ const LocalFrameToken* FrameLoadRequest::GetInitiatorFrameToken() const {
+@@ -144,6 +145,14 @@ const LocalFrameToken* FrameLoadRequest::GetInitiatorFrameToken() const {
  const AtomicString& FrameLoadRequest::CleanNavigationTarget(
      const AtomicString& target) const {
    if (ContainsNewLineAndLessThan(target)) {
@@ -331,7 +331,7 @@ diff --git a/third_party/blink/renderer/core/page/frame_tree.cc b/third_party/bl
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -1535,8 +1535,8 @@
+@@ -1493,8 +1493,8 @@
        // Experiment with preventing some instances of mutation XSS
        // by escaping "<" and ">" in attribute values.
        // See: crbug.com/1175016
@@ -342,7 +342,7 @@ diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 
      },
      {
        name: "EventTimingInteractionCount",
-@@ -2312,6 +2312,12 @@
+@@ -2301,6 +2301,12 @@
        name: "MacFontsDeprecateFontTraitsWorkaround",
        status: "stable",
      },

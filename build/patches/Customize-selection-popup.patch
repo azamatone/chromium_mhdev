@@ -9,13 +9,14 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 ---
  .../browser/ChromeActionModeHandler.java      |   4 +-
  .../chrome/browser/ChromeTabbedActivity.java  |  15 +-
+ ...ActivityTabWebContentsDelegateAndroid.java |  10 +-
  .../compositor/layouts/LayoutManagerImpl.java |   8 ++
  .../chrome/browser/ui/RootUiCoordinator.java  |   8 +-
  .../Customize-selection-popup.grdp            |  34 +++++
  .../res/xml/accessibility_preferences.xml     |  24 ++++
  .../selection/SelectActionMenuHelper.java     | 131 ++++++++++++------
  .../selection/SmartSelectionClient.java       |   4 +
- 8 files changed, 178 insertions(+), 50 deletions(-)
+ 9 files changed, 187 insertions(+), 51 deletions(-)
  create mode 100644 chrome/browser/ui/android/strings/cromite_android_chrome_strings_grd/Customize-selection-popup.grdp
 
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeActionModeHandler.java b/chrome/android/java/src/org/chromium/chrome/browser/ChromeActionModeHandler.java
@@ -35,7 +36,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeActionMod
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java
-@@ -748,10 +748,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
+@@ -754,10 +754,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                  @TabLaunchType int type,
                                  @TabCreationState int creationState,
                                  boolean markedForSelection) {
@@ -57,6 +58,31 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedAct
                                  Toast.makeText(
                                                  ChromeTabbedActivity.this,
                                                  R.string.open_in_new_tab_toast,
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java b/chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java
+--- a/chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java
+@@ -191,12 +191,20 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
+         // Skip opening a new Tab if it doesn't make sense.
+         if (mTab.isClosing()) return false;
+ 
++        int tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;
++        boolean selectionPopupTabsForeground =
++                    ContextUtils.getAppSharedPreferences().getBoolean(
++                        "selection_popup_tabs_foreground", false);
++        if (selectionPopupTabsForeground) {
++            tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP;
++        }
++
+         // Creating new Tabs asynchronously requires starting a new Activity to create the Tab,
+         // so the Tab returned will always be null.  There's no way to know synchronously
+         // whether the Tab is created, so assume it's always successful.
+         boolean success =
+                 tabCreator.createTabWithWebContents(
+-                        mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
++                        mTab, webContents, tabLaunchType, url);
+ 
+         if (success) {
+             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl.java b/chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerImpl.java
@@ -68,7 +94,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/compositor/layo
  import org.chromium.base.ObserverList;
  import org.chromium.base.TraceEvent;
  import org.chromium.base.supplier.ObservableSupplier;
-@@ -228,6 +229,13 @@ public class LayoutManagerImpl
+@@ -227,6 +228,13 @@ public class LayoutManagerImpl
                                          && launchType != TabLaunchType.FROM_RECENT_TABS
                                          && launchType != TabLaunchType.FROM_RESTORE_TABS_UI
                                  || (!getTabModelSelector().isIncognitoSelected() && incognito);
@@ -93,7 +119,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordi
  import org.chromium.base.TraceEvent;
  import org.chromium.base.metrics.RecordUserAction;
  import org.chromium.base.supplier.ObservableSupplier;
-@@ -813,11 +814,16 @@ public class RootUiCoordinator
+@@ -841,11 +842,16 @@ public class RootUiCoordinator
                              TrackerFactory.getTrackerForProfile(tab.getProfile())
                                      .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
  
@@ -153,11 +179,10 @@ new file mode 100644
 diff --git a/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml b/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
 --- a/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
 +++ b/components/browser_ui/accessibility/android/java/res/xml/accessibility_preferences.xml
-@@ -68,4 +68,28 @@ found in the LICENSE file.
-         android:key="move_toolbar_bottom"
-         android:summary="@string/move_toolbar_bottom_summary"
-         android:title="@string/move_toolbar_bottom_title" />
-+
+@@ -73,4 +73,28 @@ found in the LICENSE file.
+         android:key="disable_toolbar_swipeup"
+         android:title="@string/disable_toolbar_swipe_up" />
+ 
 +    <PreferenceCategory
 +        android:key="customize_selecton_popup_section"
 +        android:title="@string/customize_selecton_popup_title" />
@@ -181,6 +206,7 @@ diff --git a/components/browser_ui/accessibility/android/java/res/xml/accessibil
 +        android:key="selection_popup_smart_text"
 +        android:summary="@string/selection_popup_smart_text_summary"
 +        android:title="@string/selection_popup_smart_text_title" />
++
  </PreferenceScreen>
 diff --git a/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java b/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java
 --- a/content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java

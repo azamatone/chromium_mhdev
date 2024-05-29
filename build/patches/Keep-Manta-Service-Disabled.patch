@@ -21,6 +21,6 @@ diff --git a/components/manta/features.cc b/components/manta/features.cc
               base::FEATURE_ENABLED_BY_DEFAULT);
 +SET_CROMITE_FEATURE_DISABLED(kOrcaUseProdServer);
  
- bool IsMantaServiceEnabled() {
-   return base::FeatureList::IsEnabled(kMantaService);
+ // Enables SeaPen Prod Server
+ BASE_FEATURE(kSeaPenUseProdServer,
 --

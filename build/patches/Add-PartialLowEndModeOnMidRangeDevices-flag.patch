@@ -6,23 +6,26 @@ adds a new flag in chrome://flags to re-enable the experiment
 
 License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 ---
- base/features.cc                                     |  3 +++
+ base/features.cc                                     |  4 ++++
  chrome/browser/about_flags.cc                        |  1 +
  .../Add-PartialLowEndModeOnMidRangeDevices-flag.inc  | 12 ++++++++++++
- 3 files changed, 16 insertions(+)
+ 3 files changed, 17 insertions(+)
  create mode 100644 cromite_flags/chrome/browser/about_flags_cc/Add-PartialLowEndModeOnMidRangeDevices-flag.inc
 
 diff --git a/base/features.cc b/base/features.cc
 --- a/base/features.cc
 +++ b/base/features.cc
-@@ -67,4 +67,7 @@ BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
-              base::FEATURE_DISABLED_BY_DEFAULT);
+@@ -91,6 +91,10 @@ BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
+              FEATURE_DISABLED_BY_DEFAULT);
  #endif  // BUILDFLAG(IS_ANDROID)
  
 +#if BUILDFLAG(IS_ANDROID)
 +SET_CROMITE_FEATURE_DISABLED(kPartialLowEndModeOnMidRangeDevices);
 +#endif
- }  // namespace base::features
++
+ void Init(EmitThreadControllerProfilerMetadata
+               emit_thread_controller_profiler_metadata) {
+   InitializeCpuReductionExperiment();
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc

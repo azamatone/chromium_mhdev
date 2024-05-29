@@ -4,15 +4,30 @@ Subject: Disable Compose feature
 
 License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 ---
- components/compose/core/browser/compose_features.cc | 2 ++
- components/compose/features.gni                     | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ chrome/browser/extensions/api/settings_private/prefs_util.cc | 2 ++
+ components/compose/core/browser/compose_features.cc          | 2 ++
+ components/compose/features.gni                              | 2 +-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
+diff --git a/chrome/browser/extensions/api/settings_private/prefs_util.cc b/chrome/browser/extensions/api/settings_private/prefs_util.cc
+--- a/chrome/browser/extensions/api/settings_private/prefs_util.cc
++++ b/chrome/browser/extensions/api/settings_private/prefs_util.cc
+@@ -483,8 +483,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
+   (*s_allowlist)
+       [::permissions::prefs::kUnusedSitePermissionsRevocationEnabled] =
+           settings_api::PrefType::kBoolean;
++#if BUILDFLAG(ENABLE_COMPOSE)
+   (*s_allowlist)[prefs::kEnableProactiveNudge] =
+       settings_api::PrefType::kBoolean;
++#endif
+ 
+   // Clear browsing data settings.
+   (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistory] =
 diff --git a/components/compose/core/browser/compose_features.cc b/components/compose/core/browser/compose_features.cc
 --- a/components/compose/core/browser/compose_features.cc
 +++ b/components/compose/core/browser/compose_features.cc
-@@ -61,4 +61,6 @@ BASE_FEATURE(kComposeRequestLatencyTimeout,
-              "ComposeRequestLatencyTimeout",
+@@ -73,4 +73,6 @@ BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
+              "ComposeEnableNudgeForUnspecifiedHint",
               base::FEATURE_ENABLED_BY_DEFAULT);
  
 +SET_CROMITE_FEATURE_DISABLED(kEnableCompose);

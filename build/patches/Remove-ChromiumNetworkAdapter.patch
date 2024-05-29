@@ -68,7 +68,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/download/OMADow
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java b/chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
-@@ -134,41 +134,7 @@ public final class ConnectivityChecker {
+@@ -135,41 +135,7 @@ public final class ConnectivityChecker {
              postResult(callback, ConnectivityCheckResult.ERROR);
              return;
          }
@@ -231,7 +231,7 @@ diff --git a/components/variations/android/java/src/org/chromium/components/vari
      @VisibleForTesting
      protected List<String> getAvailableInstanceManipulations() {
          List<String> compressions = new ArrayList<String>();
-@@ -531,24 +523,8 @@ public class VariationsSeedFetcher {
+@@ -532,24 +524,8 @@ public class VariationsSeedFetcher {
          HttpURLConnection connection = null;
          try {
              long startTimeMillis = SystemClock.elapsedRealtime();

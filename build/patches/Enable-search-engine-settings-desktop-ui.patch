@@ -119,7 +119,7 @@ diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources
        <!-- Support Tool strings -->
        <if expr="not is_android">
          <part file="support_tool_strings.grdp" />
-@@ -489,7 +494,7 @@ are declared in tools/grit/grit_rule.gni.
+@@ -496,7 +501,7 @@ are declared in tools/grit/grit_rule.gni.
          Disable
        </message>
        <!-- Search strings are only used in webui, so no mobile. -->
@@ -131,7 +131,7 @@ diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources
 diff --git a/chrome/app/settings_strings.grdp b/chrome/app/settings_strings.grdp
 --- a/chrome/app/settings_strings.grdp
 +++ b/chrome/app/settings_strings.grdp
-@@ -2413,6 +2413,9 @@
+@@ -2472,6 +2472,9 @@
    <message name="IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL_EXPLANATION" desc="Label for explaining the format of the URL that should be entered by the user in the add/edit search engine dialog.">
      URL with <ph name="SPECIAL_SYMBOL">%s</ph> in place of query
    </message>
@@ -409,7 +409,7 @@ new file mode 100644
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -3663,6 +3663,9 @@ static_library("browser") {
+@@ -3720,6 +3720,9 @@ static_library("browser") {
          "//components/user_scripts/android",
        ]
      }
@@ -422,9 +422,9 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.gn
 --- a/chrome/browser/resources/BUILD.gn
 +++ b/chrome/browser/resources/BUILD.gn
-@@ -17,6 +17,12 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
- group("resources") {
-   public_deps = [ "segmentation_internals:resources" ]
+@@ -20,6 +20,12 @@ group("resources") {
+     "segmentation_internals:resources",
+   ]
  
 +  if (is_android) {
 +    public_deps += [
@@ -800,7 +800,7 @@ diff --git a/chrome/browser/search_engines/android/java/src/org/chromium/chrome/
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
-@@ -1038,6 +1038,18 @@ static_library("ui") {
+@@ -1059,6 +1059,18 @@ static_library("ui") {
        "//ui/android",
        "//url",
      ]
@@ -1002,7 +1002,7 @@ diff --git a/chrome/browser/ui/search_engines/template_url_table_model.h b/chrom
 diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
 --- a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
 +++ b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
-@@ -127,6 +127,8 @@
+@@ -128,6 +128,8 @@
  #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
  #include "components/feed/buildflags.h"
  #include "components/feed/feed_feature_list.h"
@@ -1011,7 +1011,7 @@ diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrom
  #else  // BUILDFLAG(IS_ANDROID)
  #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
  #include "chrome/browser/media/router/media_router_feature.h"
-@@ -624,6 +626,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
+@@ -605,6 +607,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
      return &NewWebUI<WebAppInternalsUI>;
    }
  #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1259,7 +1259,7 @@ diff --git a/chrome/browser/ui/webui/settings/search_engines_handler.h b/chrome/
 diff --git a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 --- a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 +++ b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-@@ -2548,6 +2548,8 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
+@@ -2300,6 +2300,8 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        {"searchEnginesQueryURL", IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL},
        {"searchEnginesQueryURLExplanation",
         IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL_EXPLANATION},
@@ -1784,7 +1784,7 @@ diff --git a/chrome/browser/ui/webui/webui_util.cc b/chrome/browser/ui/webui/web
 diff --git a/chrome/chrome_paks.gni b/chrome/chrome_paks.gni
 --- a/chrome/chrome_paks.gni
 +++ b/chrome/chrome_paks.gni
-@@ -146,6 +146,17 @@ template("chrome_extra_paks") {
+@@ -147,6 +147,17 @@ template("chrome_extra_paks") {
        sources += invoker.additional_paks
      }
  
@@ -1840,7 +1840,7 @@ diff --git a/components/search_engines/android/template_url_service_android.cc b
 diff --git a/components/search_engines/template_url_service.cc b/components/search_engines/template_url_service.cc
 --- a/components/search_engines/template_url_service.cc
 +++ b/components/search_engines/template_url_service.cc
-@@ -646,13 +646,15 @@ TemplateURL* TemplateURLService::AddWithOverrides(
+@@ -653,13 +653,15 @@ TemplateURL* TemplateURLService::AddWithOverrides(
      std::unique_ptr<TemplateURL> template_url,
      const std::u16string& short_name,
      const std::u16string& keyword,
@@ -1857,7 +1857,7 @@ diff --git a/components/search_engines/template_url_service.cc b/components/sear
    return Add(std::move(template_url));
  }
  
-@@ -841,7 +843,8 @@ void TemplateURLService::IncrementUsageCount(TemplateURL* url) {
+@@ -855,7 +857,8 @@ void TemplateURLService::IncrementUsageCount(TemplateURL* url) {
  void TemplateURLService::ResetTemplateURL(TemplateURL* url,
                                            const std::u16string& title,
                                            const std::u16string& keyword,
@@ -1867,7 +1867,7 @@ diff --git a/components/search_engines/template_url_service.cc b/components/sear
    DCHECK(!IsCreatedByExtension(url));
    DCHECK(!keyword.empty());
    DCHECK(!search_url.empty());
-@@ -853,6 +856,7 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
+@@ -867,6 +870,7 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
      // The urls have changed, reset the favicon url.
      data.favicon_url = GURL();
    }
@@ -1878,7 +1878,7 @@ diff --git a/components/search_engines/template_url_service.cc b/components/sear
 diff --git a/components/search_engines/template_url_service.h b/components/search_engines/template_url_service.h
 --- a/components/search_engines/template_url_service.h
 +++ b/components/search_engines/template_url_service.h
-@@ -246,7 +246,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
+@@ -247,7 +247,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
    TemplateURL* AddWithOverrides(std::unique_ptr<TemplateURL> template_url,
                                  const std::u16string& short_name,
                                  const std::u16string& keyword,
@@ -1901,7 +1901,7 @@ diff --git a/components/search_engines/template_url_service.h b/components/searc
 diff --git a/content/browser/webui/web_ui_impl.cc b/content/browser/webui/web_ui_impl.cc
 --- a/content/browser/webui/web_ui_impl.cc
 +++ b/content/browser/webui/web_ui_impl.cc
-@@ -255,6 +255,10 @@ void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
+@@ -255,6 +255,10 @@ void WebUIImpl::RegisterMessageCallback(std::string_view message,
    message_callbacks_.emplace(message, std::move(callback));
  }
  
@@ -1934,15 +1934,15 @@ diff --git a/content/browser/webui/web_ui_impl.cc b/content/browser/webui/web_ui
 diff --git a/content/browser/webui/web_ui_impl.h b/content/browser/webui/web_ui_impl.h
 --- a/content/browser/webui/web_ui_impl.h
 +++ b/content/browser/webui/web_ui_impl.h
-@@ -82,6 +82,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
+@@ -83,6 +83,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
    void ProcessWebUIMessage(const GURL& source_url,
                             const std::string& message,
                             base::Value::List args) override;
 +  void DoNotCrashOnUnhandledMessage() override;
    bool CanCallJavascript() override;
-   void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
+   void CallJavascriptFunctionUnsafe(std::string_view function_name) override;
    void CallJavascriptFunctionUnsafe(
-@@ -153,6 +154,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
+@@ -154,6 +155,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
  
    std::unique_ptr<WebUIController> controller_;
  
@@ -2005,7 +2005,7 @@ diff --git a/ui/base/template_expressions.cc b/ui/base/template_expressions.cc
 diff --git a/ui/webui/BUILD.gn b/ui/webui/BUILD.gn
 --- a/ui/webui/BUILD.gn
 +++ b/ui/webui/BUILD.gn
-@@ -32,6 +32,14 @@ static_library("webui") {
+@@ -28,6 +28,14 @@ static_library("webui") {
      "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
    ]
  
@@ -2023,9 +2023,9 @@ diff --git a/ui/webui/BUILD.gn b/ui/webui/BUILD.gn
 diff --git a/ui/webui/resources/BUILD.gn b/ui/webui/resources/BUILD.gn
 --- a/ui/webui/resources/BUILD.gn
 +++ b/ui/webui/resources/BUILD.gn
-@@ -77,6 +77,16 @@ generate_grd("build_grd") {
+@@ -79,6 +79,16 @@ generate_grd("build_grd") {
+       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
        "$target_gen_dir/cr_components/most_visited/resources.grdp",
-       "$target_gen_dir/cr_components/settings_prefs/resources.grdp",
      ]
 +    if (is_android) {
 +      public_deps -= [
@@ -2038,8 +2038,8 @@ diff --git a/ui/webui/resources/BUILD.gn b/ui/webui/resources/BUILD.gn
 +      ]
 +    }
  
-     if (use_nss_certs) {
-       public_deps += [ "cr_components/certificate_manager:build_grdp" ]
+     if (use_blink) {
+       if (use_nss_certs || chrome_root_store_cert_management_ui) {
 diff --git a/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn b/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
 --- a/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
 +++ b/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
@@ -2103,7 +2103,7 @@ diff --git a/ui/webui/resources/cr_elements/cr_dialog/cr_dialog.css b/ui/webui/r
 diff --git a/ui/webui/resources/cr_elements/cr_shared_vars.css b/ui/webui/resources/cr_elements/cr_shared_vars.css
 --- a/ui/webui/resources/cr_elements/cr_shared_vars.css
 +++ b/ui/webui/resources/cr_elements/cr_shared_vars.css
-@@ -225,6 +225,10 @@ html {
+@@ -226,6 +226,10 @@ html {
    --cr-form-field-label-line-height: 1;
  }
  

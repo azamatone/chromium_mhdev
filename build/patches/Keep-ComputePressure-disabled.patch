@@ -1,0 +1,25 @@
+From: uazo <uazo@users.noreply.github.com>
+Date: Tue, 14 May 2024 15:33:59 +0000
+Subject: Keep ComputePressure disabled
+
+License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
+---
+ .../blink/renderer/platform/runtime_enabled_features.json5   | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+--- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
++++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+@@ -696,8 +696,9 @@
+     },
+     {
+       // Shipping in M125. Should be removed after M127.
+-      name: "ComputePressure",
+-      status: "stable",
++      name: "ComputePressure", // disabled
++      status: "experimental",  // by default
++      public: true,
+     },
+     {
+       name: "ConsolidatedMovementXY",
+--

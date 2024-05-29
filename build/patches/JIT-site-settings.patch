@@ -242,10 +242,10 @@ new file mode 100644
 +    Enable the JIT compiler and WebAssembly support in V8
 +  </message>
 +  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_JIT_ENABLED" desc="Summary text explaining that sites are allowed to compile JavaScript in JIT mode." formatter_data="android_java">
-+    Allow JIT and WebAssembly on a specific site.
++    Allow JIT and WebAssembly
 +  </message>
 +  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_JIT_DISABLED" desc="Summary text explaining that sites are running JavaScript in JITless mode." formatter_data="android_java">
-+    Block JIT and WebAssembly on a specific site.
++    Block JIT and WebAssembly
 +  </message>
 +  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_JIT_ALLOW" desc="The description for the allow Javascript JIT for website dialog." formatter_data="android_java">
 +    Allow sites to use just-in-time compilation; more performant but a constant source of security vulnerabilities.
@@ -274,7 +274,7 @@ new file mode 100644
 diff --git a/components/content_settings/core/browser/content_settings_registry.cc b/components/content_settings/core/browser/content_settings_registry.cc
 --- a/components/content_settings/core/browser/content_settings_registry.cc
 +++ b/components/content_settings/core/browser/content_settings_registry.cc
-@@ -572,7 +572,7 @@ void ContentSettingsRegistry::Init() {
+@@ -586,7 +586,7 @@ void ContentSettingsRegistry::Init() {
             ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
  
    Register(ContentSettingsType::JAVASCRIPT_JIT, "javascript-jit",

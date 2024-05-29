@@ -455,7 +455,7 @@ diff --git a/DEPS b/DEPS
 +
    # If you change this, also update the libc++ revision in
    # //buildtools/deps_revisions.gni.
-   'libcxx_revision':       '80307e66e74bae927fb8709a549859e777e3bf0b',
+   'libcxx_revision':       'e3b94d0e5b86883fd77696bf10dc33ba250ba99b',
 @@ -835,6 +846,10 @@ deps = {
      'condition': 'checkout_android and checkout_src_internal',
    },
@@ -465,7 +465,7 @@ diff --git a/DEPS b/DEPS
 +  },
 +
    'src/docs/website': {
-     'url': Var('chromium_git') + '/website.git' + '@' + '02057aa20e0dd4598967e3daf2f25c815962ef1c',
+     'url': Var('chromium_git') + '/website.git' + '@' + '192b4c1fca9c092343459067d75ba65fbc6ea856',
    },
 @@ -960,6 +975,13 @@ deps = {
        'dep_type': 'cipd',
@@ -599,7 +599,7 @@ diff --git a/components/BUILD.gn b/components/BUILD.gn
      "//components/affiliations/core/browser:unit_tests",
      "//components/aggregation_service:unit_tests",
      "//components/apdu:unit_tests",
-@@ -409,6 +420,7 @@ test("components_unittests") {
+@@ -413,6 +424,7 @@ test("components_unittests") {
  
    if (use_blink) {
      deps += [
@@ -52314,7 +52314,7 @@ diff --git a/content/browser/loader/navigation_url_loader_impl.cc b/content/brow
  #include "content/browser/loader/navigation_url_loader_impl.h"
  
  #include <map>
-@@ -1087,7 +1091,7 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
+@@ -1093,7 +1097,7 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
    LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
                          resource_request_->is_outermost_main_frame);
    net::Error error = net::OK;
@@ -52337,7 +52337,7 @@ diff --git a/content/browser/renderer_host/render_frame_host_impl.cc b/content/b
  
  #include "content/browser/renderer_host/render_frame_host_impl.h"
  
-@@ -2667,6 +2671,12 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
+@@ -2673,6 +2677,12 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
        std::move(callback));
  }
  
@@ -52364,7 +52364,7 @@ diff --git a/content/browser/renderer_host/render_frame_host_impl.h b/content/br
  
  #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_IMPL_H_
  #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_IMPL_H_
-@@ -438,6 +442,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
+@@ -439,6 +443,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                 const std::u16string& method_name,
                                 base::Value::List arguments,
                                 JavaScriptResultCallback callback) override;
@@ -52389,7 +52389,7 @@ diff --git a/content/public/browser/render_frame_host.h b/content/public/browser
  
  #ifndef CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_
  #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_
-@@ -525,6 +529,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
+@@ -534,6 +538,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
    virtual void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                                     const std::string& message) = 0;
  
@@ -52507,7 +52507,7 @@ diff --git a/third_party/blink/public/mojom/frame/frame.mojom b/third_party/blin
  
  module blink.mojom;
  
-@@ -914,6 +918,10 @@ interface LocalFrame {
+@@ -923,6 +927,10 @@ interface LocalFrame {
    // the given point in the view coordinate space.
    PluginActionAt(gfx.mojom.Point location, blink.mojom.PluginActionType action);
  
@@ -52630,7 +52630,7 @@ diff --git a/third_party/blink/renderer/core/frame/local_frame_mojo_handler.cc b
  
  #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
  
-@@ -358,6 +362,14 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
+@@ -354,6 +358,14 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
        WrapWeakPersistent(this)));
  }
  
@@ -52659,7 +52659,7 @@ diff --git a/third_party/blink/renderer/core/frame/local_frame_mojo_handler.h b/
  
  #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
  #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
-@@ -112,6 +116,7 @@ class LocalFrameMojoHandler
+@@ -109,6 +113,7 @@ class LocalFrameMojoHandler
    void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
                             const WTF::String& message,
                             bool discard_duplicates) final;
@@ -52681,7 +52681,7 @@ diff --git a/third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_ur
  #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
  
  #include <iterator>
-@@ -389,7 +393,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
+@@ -388,7 +392,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
      OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
      return;
    }
@@ -53139,15 +53139,15 @@ diff --git a/tools/gritsettings/resource_ids.spec b/tools/gritsettings/resource_
  # This file is used to assign starting resource ids for resources and strings
  # used by Chromium.  This is done to ensure that resource ids are unique
  # across all the grd files.  If you are adding a new grd file, please add
-@@ -708,6 +712,10 @@
-     "META": {"sizes": {"includes": [10]}},
-     "includes": [5240],
+@@ -731,6 +735,10 @@
+    "META": {"sizes": {"includes": [10]}},
+     "includes": [5460],
    },
 +  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/adblock_internals/resources.grd": {
-+    "META": {"sizes": {"includes": [10],}},
-+    "includes": [5250],
++    "META": {"sizes": {"includes": [10]}},
++    "includes": [5480],
 +  },
-   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/on_device_internals/resources.grd": {
-     "META": {"sizes": {"includes": [10]}},
-     "includes": [5260],
+   # END chrome/ WebUI resources section
+ 
+   # START chrome/ miscellaneous section.
 --

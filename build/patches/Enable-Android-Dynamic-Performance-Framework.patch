@@ -23,7 +23,7 @@ diff --git a/chrome/version.gni b/chrome/version.gni
 diff --git a/components/viz/common/features.cc b/components/viz/common/features.cc
 --- a/components/viz/common/features.cc
 +++ b/components/viz/common/features.cc
-@@ -289,9 +289,11 @@ BASE_FEATURE(kDelegateTransforms,
+@@ -291,9 +291,11 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
  
  // If enabled, Chrome includes the Renderer Main thread(s) into the
  // ADPF(Android Dynamic Performance Framework) hint session.
@@ -33,6 +33,6 @@ diff --git a/components/viz/common/features.cc b/components/viz/common/features.
               base::FEATURE_ENABLED_BY_DEFAULT);
 +SET_CROMITE_FEATURE_ENABLED(kEnableADPFRendererMain);
  
- // If enabled, surface activation and draw do not block on dependencies.
- BASE_FEATURE(kDrawImmediatelyWhenInteractive,
+ // If enabled, Chrome includes the Compositor GPU Thread into the
+ // ADPF(Android Dynamic Performance Framework) hint session, instead
 --

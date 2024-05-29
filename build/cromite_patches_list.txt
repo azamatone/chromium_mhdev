@@ -140,7 +140,6 @@ Re-introduce-override_build_timestamp.patch
 enable-ftrivial-auto-var-init-zero.patch
 disable-appending-variations-header.patch
 Disable-idle-detection.patch
-Allow-building-without-supervised-users.patch
 Disable-minidump-upload-scheduling.patch
 Revert-Permit-blocking-of-view-source.patch
 Disable-safety-check.patch
@@ -237,8 +236,6 @@ Add-webRTC-site-settings.patch
 Show-site-settings-for-cookies-javascript-and-ads.patch
 Viewport-Protection-flag.patch
 Revert-remove-allowscript-content-setting-secondary-url.patch
-Revert-remove-allowimage-content-setting-secondary-url.patch
-Temp-Alert-for-CC-revert.patch
 Timezone-customization.patch
 Change-popup-site-setting.patch
 Disable-speechSynthesis-getVoices-API.patch
@@ -288,6 +285,11 @@ Enable-platform-aac-audio-and-h264-video.patch
 Disable-Paint-Preview-by-default.patch
 Do-not-use-Windows-ClearType-Text-Tuner-setting.patch
 Private-network-access-content-settings.patch
+Allow-building-without-supervised-users.patch
+Keep-ComputePressure-disabled.patch
+Android-Toolbar-Scroll-Ablation-setting.patch
+Keep-disabled-WebViewMediaIntegrityApi.patch
+Enable-menu-on-reload-button.patch
 
 Temp-PerformanceNavigationTiming-privacy-fix.patch
 Temp-disable-predictive-back-gesture.patch

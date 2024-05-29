@@ -44,7 +44,7 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
 diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
 --- a/chrome/android/chrome_java_resources.gni
 +++ b/chrome/android/chrome_java_resources.gni
-@@ -653,6 +653,8 @@ chrome_java_resources = [
+@@ -649,6 +649,8 @@ chrome_java_resources = [
    "java/res/xml/phone_as_a_security_key_accessory_filter.xml",
    "java/res/xml/incognito_preferences.xml",
    "java/res/xml/privacy_preferences.xml",
@@ -186,7 +186,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/privacy/setting
      private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
      private static final String PREF_PROXY_OPTIONS = "proxy";
      private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
-@@ -415,6 +417,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
+@@ -416,6 +418,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                              : R.string.text_off);
          }
  
@@ -379,7 +379,7 @@ new file mode 100644
 diff --git a/chrome/browser/extensions/api/settings_private/prefs_util.cc b/chrome/browser/extensions/api/settings_private/prefs_util.cc
 --- a/chrome/browser/extensions/api/settings_private/prefs_util.cc
 +++ b/chrome/browser/extensions/api/settings_private/prefs_util.cc
-@@ -214,6 +214,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
+@@ -216,6 +216,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
    (*s_allowlist)[::prefs::kExpireDaysThreshold] =
        settings_api::PrefType::kNumber;
  
@@ -442,11 +442,11 @@ diff --git a/chrome/browser/resources/settings/privacy_page/privacy_page.html b/
 +        </div>
        </div>
  
- <if expr="use_nss_certs">
+ <if expr="is_chromeos">
 diff --git a/chrome/browser/resources/settings/privacy_page/privacy_page.ts b/chrome/browser/resources/settings/privacy_page/privacy_page.ts
 --- a/chrome/browser/resources/settings/privacy_page/privacy_page.ts
 +++ b/chrome/browser/resources/settings/privacy_page/privacy_page.ts
-@@ -97,6 +97,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
+@@ -98,6 +98,17 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
          },
        },
  
@@ -464,7 +464,7 @@ diff --git a/chrome/browser/resources/settings/privacy_page/privacy_page.ts b/ch
        /**
         * Preferences state.
         */
-@@ -449,6 +460,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
+@@ -482,6 +493,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
      Router.getInstance().navigateTo(routes.TRACKING_PROTECTION);
    }
  
@@ -480,7 +480,7 @@ diff --git a/chrome/browser/resources/settings/privacy_page/privacy_page.ts b/ch
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -1046,6 +1046,30 @@ CHAR_LIMIT guidelines:
+@@ -1045,6 +1045,30 @@ CHAR_LIMIT guidelines:
  
  For example, some websites may respond to this request by showing you ads that aren’t based on other websites you’ve visited. Many websites will still collect and use your browsing data — for example to improve security, to provide content, ads and recommendations, and to generate reporting statistics.
        </message>
@@ -538,7 +538,7 @@ diff --git a/chrome/browser/ui/prefs/prefs_tab_helper.cc b/chrome/browser/ui/pre
 diff --git a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 --- a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 +++ b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-@@ -1723,6 +1723,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
+@@ -1737,6 +1737,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
      {"dayHistory", IDS_SETTINGS_DAY_HISTORY_DESCRIPTION},
      {"daysHistory", IDS_SETTINGS_DAYS_HISTORY_DESCRIPTION},
      {"foreverHistory", IDS_SETTINGS_FOREVER_HISTORY_DESCRIPTION},
@@ -552,7 +552,7 @@ diff --git a/chrome/browser/ui/webui/settings/settings_localized_strings_provide
 diff --git a/chrome/common/pref_names.h b/chrome/common/pref_names.h
 --- a/chrome/common/pref_names.h
 +++ b/chrome/common/pref_names.h
-@@ -1481,6 +1481,9 @@ inline constexpr char kEnableEncryptedMedia[] =
+@@ -1496,6 +1496,9 @@ inline constexpr char kEnableEncryptedMedia[] =
  inline constexpr char kPrefixedVideoFullscreenApiAvailability[] =
      "media.prefixed_fullscreen_video_api_availability";
  
@@ -615,7 +615,7 @@ diff --git a/components/download/content/internal/context_menu_download.cc b/com
 diff --git a/content/browser/renderer_host/navigation_request.cc b/content/browser/renderer_host/navigation_request.cc
 --- a/content/browser/renderer_host/navigation_request.cc
 +++ b/content/browser/renderer_host/navigation_request.cc
-@@ -403,6 +403,15 @@ void AddAdditionalRequestHeaders(
+@@ -390,6 +390,15 @@ void AddAdditionalRequestHeaders(
          blink::mojom::Referrer(GURL(), network::mojom::ReferrerPolicy::kNever);
    }
  
@@ -634,7 +634,7 @@ diff --git a/content/browser/renderer_host/navigation_request.cc b/content/brows
 diff --git a/services/network/public/cpp/resource_request.h b/services/network/public/cpp/resource_request.h
 --- a/services/network/public/cpp/resource_request.h
 +++ b/services/network/public/cpp/resource_request.h
-@@ -145,7 +145,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
+@@ -151,7 +151,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
    std::vector<GURL> navigation_redirect_chain;
  
    GURL referrer;

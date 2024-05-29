@@ -32,7 +32,7 @@ diff --git a/ui/gfx/font_render_params_win.cc b/ui/gfx/font_render_params_win.cc
 diff --git a/ui/gfx/font_util_win.cc b/ui/gfx/font_util_win.cc
 --- a/ui/gfx/font_util_win.cc
 +++ b/ui/gfx/font_util_win.cc
-@@ -52,6 +52,7 @@ TextParameters GetTextParameters() {
+@@ -53,6 +53,7 @@ TextParameters GetTextParameters() {
  
  // static
  base::win::RegKey FontUtilWin::GetTextSettingsRegistryKey(REGSAM access) {

@@ -23,15 +23,15 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
 diff --git a/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator.java b/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator.java
 --- a/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator.java
 +++ b/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator.java
-@@ -25,6 +25,7 @@ import org.chromium.base.task.PostTask;
- import org.chromium.base.task.TaskTraits;
+@@ -26,6 +26,7 @@ import org.chromium.base.task.TaskTraits;
+ import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
  import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
  import org.chromium.chrome.browser.flags.ChromeFeatureList;
 +import org.chromium.chrome.browser.homepage.HomepageManager;
  import org.chromium.chrome.browser.tab.Tab;
  import org.chromium.chrome.browser.tab.TabCreationState;
  import org.chromium.chrome.browser.tab.TabLaunchType;
-@@ -55,6 +56,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
+@@ -58,6 +59,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
  import org.chromium.ui.base.DeviceFormFactor;
  import org.chromium.ui.modelutil.PropertyModel;
  import org.chromium.ui.text.EmptyTextWatcher;
@@ -39,7 +39,7 @@ diff --git a/chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser
  
  import java.util.ArrayList;
  import java.util.List;
-@@ -688,11 +690,16 @@ public class TabGridDialogMediator
+@@ -697,11 +699,16 @@ public class TabGridDialogMediator
  
              assert relatedTabs.size() > 0;
  
@@ -165,7 +165,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/homepage/settin
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java b/chrome/android/java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java
-@@ -112,7 +112,6 @@ public class LaunchMetrics {
+@@ -111,7 +111,6 @@ public class LaunchMetrics {
      public static void recordHomePageLaunchMetrics(
              boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl) {
          if (homepageGurl.isEmpty()) {
@@ -184,7 +184,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tabmodel/Chrome
  import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
  import org.chromium.chrome.browser.ntp.NewTabPageUtils;
  import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
-@@ -484,6 +485,13 @@ public class ChromeTabCreator extends TabCreator {
+@@ -485,6 +486,13 @@ public class ChromeTabCreator extends TabCreator {
       * @return the created tab.
       */
      public Tab launchUrl(String url, @TabLaunchType int type, Intent intent, long intentTimestamp) {
@@ -201,7 +201,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/tabmodel/Chrome
 diff --git a/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java b/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
 --- a/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
 +++ b/chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java
-@@ -283,6 +283,7 @@ public final class ChromePreferenceKeys {
+@@ -277,6 +277,7 @@ public final class ChromePreferenceKeys {
      public static final String HOMEPAGE_USE_CHROME_NTP = "Chrome.Homepage.UseNTP";
      public static final String HOMEPAGE_USE_DEFAULT_URI = "homepage_partner_enabled";
  
@@ -223,7 +223,7 @@ diff --git a/chrome/browser/preferences/android/java/src/org/chromium/chrome/bro
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -1369,6 +1369,9 @@ Your Google account may have other forms of browsing history like searches and a
+@@ -1377,6 +1377,9 @@ Your Google account may have other forms of browsing history like searches and a
        <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_HOUR" desc="The option to delete browsing data from the last hour.">
          Last hour
        </message>
@@ -236,10 +236,10 @@ diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chro
 diff --git a/chrome/browser/ui/browser_ui_prefs.cc b/chrome/browser/ui/browser_ui_prefs.cc
 --- a/chrome/browser/ui/browser_ui_prefs.cc
 +++ b/chrome/browser/ui/browser_ui_prefs.cc
-@@ -78,6 +78,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
-                                 GetHomeButtonAndHomePageIsNewTabPageFlags());
-   registry->RegisterBooleanPref(prefs::kShowHomeButton, false,
-                                 GetHomeButtonAndHomePageIsNewTabPageFlags());
+@@ -85,6 +85,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterBooleanPref(
+       prefs::kShowForwardButton, true,
+       GetHomeAndForwardButtonAndHomePageIsNewTabPageFlags());
 +  registry->RegisterBooleanPref(prefs::kNewTabPageIsHomePage, false,
 +                                PrefRegistry::NO_REGISTRATION_FLAGS);
  
@@ -248,9 +248,9 @@ diff --git a/chrome/browser/ui/browser_ui_prefs.cc b/chrome/browser/ui/browser_u
 diff --git a/chrome/common/pref_names.h b/chrome/common/pref_names.h
 --- a/chrome/common/pref_names.h
 +++ b/chrome/common/pref_names.h
-@@ -1269,6 +1269,10 @@ inline constexpr char kUsedPolicyCertificates[] =
- // visible on the toolbar.
- inline constexpr char kShowHomeButton[] = "browser.show_home_button";
+@@ -1280,6 +1280,10 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
+ // toolbar.
+ inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
  
 +// A boolean specifying whether opening a new tab should open the Home page
 +// instead of the New Tab page.
