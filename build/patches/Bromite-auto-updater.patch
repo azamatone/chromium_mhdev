@@ -21,12 +21,12 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
  .../inline/BromiteInlineUpdateController.java | 273 ++++++++++++++++++
  .../omaha/inline/InlineUpdateController.java  |  51 ++++
  .../inline/InlineUpdateControllerFactory.java |  21 ++
- chrome/browser/BUILD.gn                       |   2 +
+ chrome/browser/BUILD.gn                       |   6 +
  chrome/browser/endpoint_fetcher/BUILD.gn      |  32 ++
  chrome/browser/endpoint_fetcher/DEPS          |   3 +
  chrome/browser/endpoint_fetcher/OWNERS        |   1 +
- .../endpoint_fetcher_android.cc               | 184 ++++++++++++
- .../endpoint_fetcher/EndpointFetcher.java     | 165 +++++++++++
+ .../endpoint_fetcher_android.cc               | 149 ++++++++++
+ .../endpoint_fetcher/EndpointFetcher.java     | 116 ++++++++
  .../EndpointHeaderResponse.java               |  31 ++
  .../endpoint_fetcher/EndpointResponse.java    |  30 ++
  .../flags/android/chrome_feature_list.cc      |   1 +
@@ -36,7 +36,7 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
  .../endpoint_fetcher/endpoint_fetcher.h       |  23 +-
  .../Bromite-auto-updater.inc                  |   3 +
  .../Bromite-auto-updater.inc                  |   1 +
- 28 files changed, 1269 insertions(+), 52 deletions(-)
+ 28 files changed, 1189 insertions(+), 52 deletions(-)
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/omaha/inline/BromiteInlineUpdateController.java
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/omaha/inline/InlineUpdateController.java
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/omaha/inline/InlineUpdateControllerFactory.java
@@ -53,7 +53,7 @@ License: GPL-3.0-only - https://spdx.org/licenses/GPL-3.0-only.html
 diff --git a/build/android/java/templates/BuildConfig.template b/build/android/java/templates/BuildConfig.template
 --- a/build/android/java/templates/BuildConfig.template
 +++ b/build/android/java/templates/BuildConfig.template
-@@ -87,6 +87,8 @@ public class BuildConfig {
+@@ -94,6 +94,8 @@ public class BuildConfig {
      public static MAYBE_FINAL boolean IS_FOR_TEST MAYBE_FALSE;
  #endif
  
@@ -65,7 +65,7 @@ diff --git a/build/android/java/templates/BuildConfig.template b/build/android/j
 diff --git a/build/config/android/rules.gni b/build/config/android/rules.gni
 --- a/build/config/android/rules.gni
 +++ b/build/config/android/rules.gni
-@@ -1905,6 +1905,9 @@ if (enable_java_templates && is_android) {
+@@ -1901,6 +1901,9 @@ if (is_robolectric) {
        sources = [ "//build/android/java/templates/BuildConfig.template" ]
        defines = []
  
@@ -1114,22 +1114,19 @@ new file mode 100644
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -3123,6 +3123,7 @@ static_library("browser") {
-       "download/android/service/download_task_scheduler.h",
-       "download/android/string_utils.cc",
-       "download/download_crx_util_android.cc",
+@@ -2761,6 +2761,12 @@ static_library("browser") {
+   }
+ 
+   if (is_android) {
++    sources += [
 +      "endpoint_fetcher/endpoint_fetcher_android.cc",
-       "enterprise/reporting/browser_report_generator_android.cc",
-       "enterprise/reporting/browser_report_generator_android.h",
-       "enterprise/reporting/profile_report_generator_android.cc",
-@@ -3458,6 +3459,7 @@ static_library("browser") {
-       "//chrome/browser/content_extraction/android:jni_headers",
-       "//chrome/browser/device_reauth/android:jni_headers",
-       "//chrome/browser/download/internal/android",
++    ]
++    deps += [
 +      "//chrome/browser/endpoint_fetcher:jni_headers",
-       "//chrome/browser/feed/android:jni_headers",
-       "//chrome/browser/feedback/android",
-       "//chrome/browser/feedback/android:jni_headers",
++    ]
+     sources += [
+       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
+       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.h",
 diff --git a/chrome/browser/endpoint_fetcher/BUILD.gn b/chrome/browser/endpoint_fetcher/BUILD.gn
 new file mode 100644
 --- /dev/null
@@ -1185,7 +1182,7 @@ diff --git a/chrome/browser/endpoint_fetcher/endpoint_fetcher_android.cc b/chrom
 new file mode 100644
 --- /dev/null
 +++ b/chrome/browser/endpoint_fetcher/endpoint_fetcher_android.cc
-@@ -0,0 +1,184 @@
+@@ -0,0 +1,149 @@
 +// Copyright 2019 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -1282,41 +1279,6 @@ new file mode 100644
 +                     std::move(endpoint_fetcher)));
 +}
 +
-+static void JNI_EndpointFetcher_NativeFetchChromeAPIKey(
-+    JNIEnv* env,
-+    const base::android::JavaParamRef<jobject>& jprofile,
-+    const base::android::JavaParamRef<jstring>& jurl,
-+    const base::android::JavaParamRef<jstring>& jhttps_method,
-+    const base::android::JavaParamRef<jstring>& jcontent_type,
-+    const base::android::JavaParamRef<jstring>& jpost_data,
-+    jlong jtimeout,
-+    const base::android::JavaParamRef<jobjectArray>& jheaders,
-+    jint jannotation_hash_code,
-+    const base::android::JavaParamRef<jobject>& jcallback) {
-+  std::vector<std::string> headers;
-+  base::android::AppendJavaStringArrayToStringVector(env, jheaders, &headers);
-+  auto endpoint_fetcher = std::make_unique<EndpointFetcher>(
-+      ProfileAndroid::FromProfileAndroid(jprofile)
-+          ->GetDefaultStoragePartition()
-+          ->GetURLLoaderFactoryForBrowserProcess(),
-+      GURL(base::android::ConvertJavaStringToUTF8(env, jurl)),
-+      base::android::ConvertJavaStringToUTF8(env, jhttps_method),
-+      base::android::ConvertJavaStringToUTF8(env, jcontent_type),
-+      base::Milliseconds(jtimeout),
-+      base::android::ConvertJavaStringToUTF8(env, jpost_data), headers,
-+      net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
-+          jannotation_hash_code),
-+      chrome::GetChannel() == version_info::Channel::STABLE);
-+  auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
-+  endpoint_fetcher_ptr->PerformRequest(
-+      base::BindOnce(&OnEndpointFetcherComplete,
-+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback),
-+                     // unique_ptr endpoint_fetcher is passed until the callback
-+                     // to ensure its lifetime across the request.
-+                     std::move(endpoint_fetcher)),
-+      nullptr);
-+}
-+
 +static void JNI_EndpointFetcher_NativeFetchWithNoAuth(
 +    JNIEnv* env,
 +    const base::android::JavaParamRef<jobject>& jprofile,
@@ -1374,7 +1336,7 @@ diff --git a/chrome/browser/endpoint_fetcher/java/src/org/chromium/chrome/browse
 new file mode 100644
 --- /dev/null
 +++ b/chrome/browser/endpoint_fetcher/java/src/org/chromium/chrome/browser/endpoint_fetcher/EndpointFetcher.java
-@@ -0,0 +1,165 @@
+@@ -0,0 +1,116 @@
 +// Copyright 2019 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -1443,44 +1405,6 @@ new file mode 100644
 +                        callback);
 +    }
 +
-+    /**
-+     * Calls an endpoint using Chrome API Key returns the response via a callback
-+     * @param callback to pass the response back in
-+     * @param profile via which the endpoint is called
-+     * @param url endpoint URL called
-+     * @param httpsMethod the HTTPS method used e.g. "GET" or "POST"
-+     * @param contentType the content type e.g. "application/json"
-+     * @param postData data for a "POST" request
-+     * @param timeout time after which the request will terminate in the event a response hasn't
-+     *         been received
-+     * @param headers headers for the request. Key/value pairs are stored sequentially in the array.
-+     */
-+    @MainThread
-+    public static void fetchUsingChromeAPIKey(
-+            Callback<EndpointResponse> callback,
-+            Profile profile,
-+            String url,
-+            String httpsMethod,
-+            String contentType,
-+            String postData,
-+            long timeout,
-+            String[] headers,
-+            NetworkTrafficAnnotationTag annotation) {
-+        // EndpointFetcher currently does not support incognito mode
-+        // assert !profile.isOffTheRecord();
-+        EndpointFetcherJni.get()
-+                .nativeFetchChromeAPIKey(
-+                        profile,
-+                        url,
-+                        httpsMethod,
-+                        contentType,
-+                        postData,
-+                        timeout,
-+                        headers,
-+                        annotation.getHashCode(),
-+                        callback);
-+    }
-+
 +    @MainThread
 +    public static void nativeHeadWithNoAuth(
 +            Callback<EndpointHeaderResponse> callback, Profile profile,
@@ -1510,17 +1434,6 @@ new file mode 100644
 +                String[] scopes,
 +                String postData,
 +                long timeout,
-+                int annotationHashCode,
-+                Callback<EndpointResponse> callback);
-+
-+        void nativeFetchChromeAPIKey(
-+                Profile profile,
-+                String url,
-+                String httpsMethod,
-+                String contentType,
-+                String postData,
-+                long timeout,
-+                String[] headers,
 +                int annotationHashCode,
 +                Callback<EndpointResponse> callback);
 +
@@ -1614,7 +1527,7 @@ new file mode 100644
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -241,6 +241,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &kPreconnectOnTabCreation,
      &kPriceChangeModule,
      &kPwaRestoreUi,
@@ -1625,10 +1538,10 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -311,6 +311,7 @@ public abstract class ChromeFeatureList {
+@@ -319,6 +319,7 @@ public abstract class ChromeFeatureList {
+     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =
              "IncognitoReauthenticationForAndroid";
      public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
-     public static final String INSTANT_START = "InstantStart";
 +    public static final String INLINE_UPDATE_FLOW = "InlineUpdateFlow";
      public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
      public static final String IP_PROTECTION_UX = "IpProtectionUx";
@@ -1636,7 +1549,7 @@ diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/f
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -2090,6 +2090,12 @@ Your Google account may have other forms of browsing history like searches and a
+@@ -2104,6 +2104,12 @@ Your Google account may have other forms of browsing history like searches and a
        <message name="IDS_DEPRECATION_WARNING" desc="Warning about Chrome updates no longer being supported">
          Chrome updates are no longer supported for this version of Android
        </message>
@@ -1649,7 +1562,7 @@ diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chro
  
        <!-- Account management UI strings. -->
        <message name="IDS_ACCOUNT_MANAGEMENT_TITLE" desc="Header title for the account management screen. [CHAR_LIMIT=32]">
-@@ -3784,7 +3790,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
+@@ -3833,7 +3839,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
  
        <!-- Main menu items -->
        <message name="IDS_MENU_UPDATE" desc="Menu item for updating chrome. [CHAR_LIMIT=24]">
@@ -1661,7 +1574,7 @@ diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chro
        </message>
        <message name="IDS_MENU_UPDATE_SUMMARY_DEFAULT" desc="Summary string for update menu item explaining that a newer version of Chrome is available. [CHAR_LIMIT=30]">
          Newer version is available
-@@ -3795,6 +3804,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
+@@ -3844,6 +3853,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
        <message name="IDS_MENU_UPDATE_UNSUPPORTED_SUMMARY_DEFAULT" desc="Summary string for update menu item explaining that the Android version on the device is unsupported. [CHAR_LIMIT=30]">
          Android version is unsupported
        </message>
@@ -1695,31 +1608,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.cc b/components/endpoi
  namespace {
  const char kContentTypeKey[] = "Content-Type";
  const char kDeveloperKey[] = "X-Developer-Key";
-@@ -65,6 +70,7 @@ EndpointFetcher::EndpointFetcher(
-       http_method_(http_method),
-       content_type_(content_type),
-       timeout_(timeout),
-+      intercept_redirect_(false),
-       post_data_(post_data),
-       headers_(headers),
-       annotation_tag_(annotation_tag),
-@@ -83,6 +89,7 @@ EndpointFetcher::EndpointFetcher(
-       http_method_("GET"),
-       content_type_(std::string()),
-       timeout_(base::Milliseconds(0)),
-+      intercept_redirect_(false),
-       post_data_(std::string()),
-       annotation_tag_(annotation_tag),
-       url_loader_factory_(url_loader_factory),
-@@ -108,6 +115,7 @@ EndpointFetcher::EndpointFetcher(
-       http_method_(http_method),
-       content_type_(content_type),
-       timeout_(timeout),
-+      intercept_redirect_(false),
-       post_data_(post_data),
-       annotation_tag_(annotation_tag),
-       url_loader_factory_(url_loader_factory),
-@@ -135,6 +143,7 @@ EndpointFetcher::EndpointFetcher(
+@@ -66,6 +71,7 @@ EndpointFetcher::EndpointFetcher(
        http_method_(http_method),
        content_type_(content_type),
        timeout_(timeout),
@@ -1727,7 +1616,31 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.cc b/components/endpoi
        post_data_(post_data),
        headers_(headers),
        cors_exempt_headers_(cors_exempt_headers),
-@@ -147,11 +156,29 @@ EndpointFetcher::EndpointFetcher(
+@@ -85,6 +91,7 @@ EndpointFetcher::EndpointFetcher(
+       http_method_("GET"),
+       content_type_(std::string()),
+       timeout_(base::Milliseconds(0)),
++      intercept_redirect_(false),
+       post_data_(std::string()),
+       annotation_tag_(annotation_tag),
+       url_loader_factory_(url_loader_factory),
+@@ -110,6 +117,7 @@ EndpointFetcher::EndpointFetcher(
+       http_method_(http_method),
+       content_type_(content_type),
+       timeout_(timeout),
++      intercept_redirect_(false),
+       post_data_(post_data),
+       annotation_tag_(annotation_tag),
+       url_loader_factory_(url_loader_factory),
+@@ -137,6 +145,7 @@ EndpointFetcher::EndpointFetcher(
+       http_method_(http_method),
+       content_type_(content_type),
+       timeout_(timeout),
++      intercept_redirect_(false),
+       post_data_(post_data),
+       headers_(headers),
+       cors_exempt_headers_(cors_exempt_headers),
+@@ -149,11 +158,29 @@ EndpointFetcher::EndpointFetcher(
  EndpointFetcher::EndpointFetcher(
      const net::NetworkTrafficAnnotationTag& annotation_tag)
      : timeout_(kDefaultTimeOut),
@@ -1757,7 +1670,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.cc b/components/endpoi
  EndpointFetcher::~EndpointFetcher() = default;
  
  void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
-@@ -210,6 +237,8 @@ void EndpointFetcher::PerformRequest(
+@@ -212,6 +239,8 @@ void EndpointFetcher::PerformRequest(
    resource_request->method = http_method_;
    resource_request->url = url_;
    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -1766,7 +1679,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.cc b/components/endpoi
    if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
      resource_request->headers.SetHeader(kContentTypeKey, content_type_);
    }
-@@ -240,25 +269,50 @@ void EndpointFetcher::PerformRequest(
+@@ -242,25 +271,50 @@ void EndpointFetcher::PerformRequest(
      default:
        break;
    }
@@ -1823,7 +1736,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.cc b/components/endpoi
  }
  
  void EndpointFetcher::OnResponseFetched(
-@@ -339,3 +393,38 @@ void EndpointFetcher::OnSanitizationResult(
+@@ -341,3 +395,38 @@ void EndpointFetcher::OnSanitizationResult(
  std::string EndpointFetcher::GetUrlForTesting() {
    return url_.spec();
  }
@@ -1883,7 +1796,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.h b/components/endpoin
    int http_status_code{-1};
    std::optional<FetchErrorType> error_type;
  };
-@@ -96,6 +100,14 @@ class EndpointFetcher {
+@@ -99,6 +103,14 @@ class EndpointFetcher {
        const GURL& url,
        const net::NetworkTrafficAnnotationTag& annotation_tag);
  
@@ -1898,7 +1811,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.h b/components/endpoin
    // Used for tests. Can be used if caller constructs their own
    // url_loader_factory and identity_manager.
    EndpointFetcher(
-@@ -151,6 +163,11 @@ class EndpointFetcher {
+@@ -154,6 +166,11 @@ class EndpointFetcher {
    void OnSanitizationResult(std::unique_ptr<EndpointResponse> response,
                              EndpointFetcherCallback endpoint_fetcher_callback,
                              data_decoder::JsonSanitizer::Result result);
@@ -1910,7 +1823,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.h b/components/endpoin
  
    enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };
    AuthType auth_type_;
-@@ -158,10 +175,11 @@ class EndpointFetcher {
+@@ -161,10 +178,11 @@ class EndpointFetcher {
    // Members set in constructor to be passed to network::ResourceRequest or
    // network::SimpleURLLoader.
    const std::string oauth_consumer_name_;
@@ -1923,7 +1836,7 @@ diff --git a/components/endpoint_fetcher/endpoint_fetcher.h b/components/endpoin
    const std::string post_data_;
    const std::vector<std::string> headers_;
    const std::vector<std::string> cors_exempt_headers_;
-@@ -185,6 +203,9 @@ class EndpointFetcher {
+@@ -188,6 +206,9 @@ class EndpointFetcher {
        access_token_fetcher_;
    std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
  

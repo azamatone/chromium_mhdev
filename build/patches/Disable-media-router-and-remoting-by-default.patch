@@ -43,7 +43,7 @@ diff --git a/chrome/browser/media/router/media_router_feature.cc b/chrome/browse
 diff --git a/chrome/browser/profiles/profile_impl.cc b/chrome/browser/profiles/profile_impl.cc
 --- a/chrome/browser/profiles/profile_impl.cc
 +++ b/chrome/browser/profiles/profile_impl.cc
-@@ -425,7 +425,7 @@ void ProfileImpl::RegisterProfilePrefs(
+@@ -421,7 +421,7 @@ void ProfileImpl::RegisterProfilePrefs(
  #endif
  
    registry->RegisterBooleanPref(prefs::kForceEphemeralProfiles, false);
@@ -55,7 +55,7 @@ diff --git a/chrome/browser/profiles/profile_impl.cc b/chrome/browser/profiles/p
 diff --git a/content/child/runtime_features.cc b/content/child/runtime_features.cc
 --- a/content/child/runtime_features.cc
 +++ b/content/child/runtime_features.cc
-@@ -588,6 +588,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
+@@ -578,6 +578,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
    WebRuntimeFeatures::EnableBackForwardCache(
        content::IsBackForwardCacheEnabled());
  
@@ -79,7 +79,7 @@ diff --git a/third_party/blink/renderer/modules/remoteplayback/remote_playback.c
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -3176,14 +3176,10 @@
+@@ -3180,14 +3180,10 @@
        base_feature: "none",
      },
      {

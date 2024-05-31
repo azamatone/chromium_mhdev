@@ -112,7 +112,7 @@ diff --git a/media/filters/ffmpeg_audio_decoder.cc b/media/filters/ffmpeg_audio_
 diff --git a/media/filters/ffmpeg_demuxer.cc b/media/filters/ffmpeg_demuxer.cc
 --- a/media/filters/ffmpeg_demuxer.cc
 +++ b/media/filters/ffmpeg_demuxer.cc
-@@ -791,6 +791,7 @@ void FFmpegDemuxerStream::InitBitstreamConverter() {
+@@ -796,6 +796,7 @@ void FFmpegDemuxerStream::InitBitstreamConverter() {
        // FFmpeg doesn't understand xHE-AAC profiles yet, which can't be put in
        // ADTS anyways, so skip bitstream conversion when the profile is
        // unknown.
@@ -167,7 +167,7 @@ diff --git a/media/filters/win/media_foundation_audio_decoder.cc b/media/filters
  #endif
  #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
      case AudioCodec::kAC4:
-@@ -310,8 +314,13 @@ void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
+@@ -314,8 +318,13 @@ void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
  }
  
  bool MediaFoundationAudioDecoder::NeedsBitstreamConversion() const {

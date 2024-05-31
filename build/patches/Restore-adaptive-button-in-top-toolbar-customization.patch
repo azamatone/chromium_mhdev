@@ -30,7 +30,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/settings/MainSe
  import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
  import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
  import org.chromium.chrome.browser.ui.signin.SyncPromoController;
-@@ -245,7 +246,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
+@@ -249,7 +250,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                          uiState -> {
                              // We don't show the toolbar shortcut settings page if disabled from
                              // finch.
@@ -89,7 +89,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/share/ShareButt
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -668,18 +668,12 @@ const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Share[] = {
+@@ -670,18 +670,12 @@ const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Share[] = {
      {"default_segment", "share"},
      {"show_ui_only_after_ready", "false"},
      {"ignore_segmentation_results", "true"}};
@@ -112,13 +112,13 @@ diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.js
 --- a/chrome/browser/flag-metadata.json
 +++ b/chrome/browser/flag-metadata.json
 @@ -42,9 +42,10 @@
-     "expiry_milestone": 125
+     "expiry_milestone": 130
    },
    {
 +    // restored in Bromite
      "name": "adaptive-button-in-top-toolbar-customization",
      "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
--    "expiry_milestone": 125
+-    "expiry_milestone": 130
 +    "expiry_milestone": -1
    },
    {
@@ -126,7 +126,7 @@ diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.js
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -146,6 +146,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -150,6 +150,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &history_clusters::internal::kJourneys,
      &history_clusters::internal::kOmniboxAction,
      &history_clusters::internal::kOmniboxHistoryClusterProvider,
@@ -134,7 +134,7 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
      &kAdaptiveButtonInTopToolbarTranslate,
      &kAdaptiveButtonInTopToolbarAddToBookmarks,
      &kAdaptiveButtonInTopToolbarCustomizationV2,
-@@ -395,6 +396,10 @@ static jlong JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
+@@ -401,6 +402,10 @@ static jlong JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
  
  // Alphabetical:
  
@@ -148,9 +148,9 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -142,6 +142,7 @@ public abstract class ChromeFeatureList {
-     }
- 
+@@ -147,6 +147,7 @@ public abstract class ChromeFeatureList {
+     public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
+             "AccountReauthenticationRecentTimeWindow";
      public static final String ALLOW_USER_CERTIFICATES = "AllowUserCertificates";
 +    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR = "AdaptiveButtonInTopToolbar";
      public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE =
@@ -225,7 +225,7 @@ diff --git a/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/brow
      /**
       * Returns whether the adaptive toolbar is enabled with segmentation and customization.
       *
-@@ -242,11 +268,48 @@ public class AdaptiveToolbarFeatures {
+@@ -241,11 +267,48 @@ public class AdaptiveToolbarFeatures {
                          ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "enable_ui", true);
      }
  

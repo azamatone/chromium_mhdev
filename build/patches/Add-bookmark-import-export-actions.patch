@@ -128,7 +128,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/TabbedModeTabDe
  import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
  import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
  import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-@@ -53,7 +54,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
+@@ -54,7 +55,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
   * {@link ChromeTabbedActivity}.
   */
  public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
@@ -137,7 +137,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/TabbedModeTabDe
      private final BrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
      private final Supplier<ShareDelegate> mShareDelegateSupplier;
      private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-@@ -82,7 +83,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
+@@ -83,7 +84,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
      private NativePageFactory mNativePageFactory;
  
      public TabbedModeTabDelegateFactory(
@@ -221,7 +221,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/B
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java b/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java
 --- a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java
-@@ -33,6 +33,48 @@ import org.chromium.url.GURL;
+@@ -34,6 +34,48 @@ import org.chromium.url.GURL;
  import java.util.ArrayList;
  import java.util.List;
  
@@ -270,7 +270,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/Bookm
  /**
   * Provides the communication channel for Android to fetch and manipulate the bookmark model stored
   * in native.
-@@ -504,6 +546,212 @@ class BookmarkBridge {
+@@ -505,6 +547,212 @@ class BookmarkBridge {
                  .getTotalBookmarkCount(mNativeBookmarkBridge, id.getId(), id.getType());
      }
  
@@ -483,7 +483,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/Bookm
      /**
       * Synchronously gets a list of bookmarks that match the specified search query.
       *
-@@ -1062,6 +1310,39 @@ class BookmarkBridge {
+@@ -1063,6 +1311,39 @@ class BookmarkBridge {
          BookmarkUtils.clearLastUsedPrefs();
      }
  
@@ -523,7 +523,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/Bookm
      private static List<Pair<Integer, Integer>> createPairsList(int[] left, int[] right) {
          List<Pair<Integer, Integer>> pairList = new ArrayList<>();
          for (int i = 0; i < left.length; i++) {
-@@ -1128,6 +1409,10 @@ class BookmarkBridge {
+@@ -1131,6 +1412,10 @@ class BookmarkBridge {
          void getChildIds(
                  long nativeBookmarkBridge, long id, int type, List<BookmarkId> bookmarksList);
  
@@ -785,7 +785,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
  import org.chromium.chrome.browser.app.download.home.DownloadPage;
  import org.chromium.chrome.browser.bookmarks.BookmarkPage;
  import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
-@@ -55,7 +56,7 @@ import org.chromium.ui.util.ColorUtils;
+@@ -56,7 +57,7 @@ import org.chromium.ui.util.ColorUtils;
   * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
   */
  public class NativePageFactory {
@@ -794,8 +794,8 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
      private final BottomSheetController mBottomSheetController;
      private final BrowserControlsManager mBrowserControlsManager;
      private final Supplier<Tab> mCurrentTabSupplier;
-@@ -75,7 +76,7 @@ public class NativePageFactory {
-     private NativePageBuilder mNativePageBuilder;
+@@ -77,7 +78,7 @@ public class NativePageFactory {
+     private static NativePage sTestPage;
  
      public NativePageFactory(
 -            @NonNull Activity activity,
@@ -803,7 +803,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
              @NonNull BottomSheetController sheetController,
              @NonNull BrowserControlsManager browserControlsManager,
              @NonNull Supplier<Tab> currentTabSupplier,
-@@ -141,7 +142,7 @@ public class NativePageFactory {
+@@ -143,7 +144,7 @@ public class NativePageFactory {
  
      @VisibleForTesting
      static class NativePageBuilder {
@@ -812,7 +812,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
          private final BottomSheetController mBottomSheetController;
          private final Supplier<NewTabPageUma> mUma;
          private final BrowserControlsManager mBrowserControlsManager;
-@@ -159,7 +160,7 @@ public class NativePageFactory {
+@@ -161,7 +162,7 @@ public class NativePageFactory {
          private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
  
          public NativePageBuilder(
@@ -821,7 +821,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
                  Supplier<NewTabPageUma> uma,
                  BottomSheetController sheetController,
                  BrowserControlsManager browserControlsManager,
-@@ -229,7 +230,7 @@ public class NativePageFactory {
+@@ -231,7 +232,7 @@ public class NativePageFactory {
                      mActivity.getComponentName(),
                      mSnackbarManagerSupplier.get(),
                      tab.getProfile(),
@@ -833,7 +833,7 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/native_page/Nat
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -201,6 +201,8 @@ static_library("browser") {
+@@ -203,6 +203,8 @@ static_library("browser") {
      "bluetooth/chrome_bluetooth_delegate_impl_client.h",
      "bookmarks/bookmark_model_factory.cc",
      "bookmarks/bookmark_model_factory.h",
@@ -842,7 +842,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
      "bookmarks/chrome_bookmark_client.cc",
      "bookmarks/chrome_bookmark_client.h",
      "bookmarks/managed_bookmark_service_factory.cc",
-@@ -1942,6 +1944,13 @@ static_library("browser") {
+@@ -1979,6 +1981,13 @@ static_library("browser") {
      ]
    }
  
@@ -856,7 +856,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
    configs += [
      "//build/config/compiler:wexit_time_destructors",
      "//build/config:precompiled_headers",
-@@ -3657,8 +3666,6 @@ static_library("browser") {
+@@ -3711,8 +3720,6 @@ static_library("browser") {
        "badging/badge_manager_factory.h",
        "banners/app_banner_manager_desktop.cc",
        "banners/app_banner_manager_desktop.h",
@@ -868,7 +868,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.cc b/chrome/browser/bookmarks/android/bookmark_bridge.cc
 --- a/chrome/browser/bookmarks/android/bookmark_bridge.cc
 +++ b/chrome/browser/bookmarks/android/bookmark_bridge.cc
-@@ -63,6 +63,28 @@
+@@ -61,6 +61,28 @@
  #include "content/public/browser/web_contents.h"
  #include "url/gurl.h"
  
@@ -894,10 +894,10 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.cc b/chrome/browse
 +#include "ui/shell_dialogs/selected_file_info.h"
 +#include "ui/shell_dialogs/select_file_dialog.h"
 +
- using base::android::AttachCurrentThread;
- using base::android::ConvertUTF16ToJavaString;
- using base::android::ConvertUTF8ToJavaString;
-@@ -80,12 +102,96 @@ using bookmarks::android::JavaBookmarkIdGetType;
+ // Must come after other includes, because FromJniType() uses Profile.
+ #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
+ 
+@@ -79,12 +101,96 @@ using bookmarks::android::JavaBookmarkIdGetType;
  using content::BrowserThread;
  using power_bookmarks::PowerBookmarkMeta;
  
@@ -994,7 +994,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.cc b/chrome/browse
  class BookmarkTitleComparer {
   public:
    explicit BookmarkTitleComparer(BookmarkBridge* bookmark_bridge,
-@@ -242,6 +348,10 @@ BookmarkBridge::~BookmarkBridge() {
+@@ -240,6 +346,10 @@ BookmarkBridge::~BookmarkBridge() {
    partner_bookmarks_shim_observation_.Reset();
    bookmark_model_observation_.Reset();
    profile_observation_.Reset();
@@ -1005,7 +1005,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.cc b/chrome/browse
  }
  
  void BookmarkBridge::Destroy(JNIEnv* env) {
-@@ -818,6 +928,183 @@ jint BookmarkBridge::GetTotalBookmarkCount(
+@@ -809,6 +919,183 @@ jint BookmarkBridge::GetTotalBookmarkCount(
    return count;
  }
  
@@ -1220,7 +1220,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.h b/chrome/browser
   public:
    // All of the injected pointers must be non-null and must outlive `this`.
    BookmarkBridge(Profile* profile,
-@@ -97,6 +102,12 @@ class BookmarkBridge : public ProfileObserver,
+@@ -95,6 +100,12 @@ class BookmarkBridge : public ProfileObserver,
  
    bool IsDoingExtensiveChanges(JNIEnv* env);
  
@@ -1233,7 +1233,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.h b/chrome/browser
    jboolean IsEditBookmarksEnabled(JNIEnv* env);
  
    void LoadEmptyPartnerBookmarkShimForTesting(JNIEnv* env);
-@@ -109,6 +120,15 @@ class BookmarkBridge : public ProfileObserver,
+@@ -107,6 +118,15 @@ class BookmarkBridge : public ProfileObserver,
                                                               jlong id,
                                                               jint type);
  
@@ -1249,7 +1249,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.h b/chrome/browser
    void GetAllFoldersWithDepths(
        JNIEnv* env,
        const base::android::JavaParamRef<jobject>& j_folders_obj,
-@@ -384,6 +404,9 @@ class BookmarkBridge : public ProfileObserver,
+@@ -375,6 +395,9 @@ class BookmarkBridge : public ProfileObserver,
    void CreateOrDestroyAccountReadingListManagerIfNeeded();
  
    const raw_ptr<Profile> profile_;  // weak
@@ -1259,7 +1259,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.h b/chrome/browser
    base::android::ScopedJavaGlobalRef<jobject> java_bookmark_model_;
    const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;  // weak
    const raw_ptr<bookmarks::ManagedBookmarkService>
-@@ -400,6 +423,7 @@ class BookmarkBridge : public ProfileObserver,
+@@ -391,6 +414,7 @@ class BookmarkBridge : public ProfileObserver,
    std::unique_ptr<bookmarks::ScopedGroupBookmarkActions>
        grouped_bookmark_actions_;
    PrefChangeRegistrar pref_change_registrar_;
@@ -1267,7 +1267,7 @@ diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.h b/chrome/browser
  
    // Information about the Partner bookmarks (must check for IsLoaded()).
    // This is owned by profile.
-@@ -431,6 +455,10 @@ class BookmarkBridge : public ProfileObserver,
+@@ -422,6 +446,10 @@ class BookmarkBridge : public ProfileObserver,
  
    bool suppress_observer_notifications_ = false;
  
@@ -1349,7 +1349,7 @@ diff --git a/chrome/browser/download/android/java/src/org/chromium/chrome/browse
 diff --git a/chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java b/chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java
 --- a/chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java
 +++ b/chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java
-@@ -37,18 +37,18 @@ import java.util.ArrayList;
+@@ -38,18 +38,18 @@ import java.util.ArrayList;
   */
  public class DownloadLocationDialogCoordinator implements ModalDialogProperties.Controller {
      @NonNull private DownloadLocationDialogController mController;
@@ -1372,7 +1372,7 @@ diff --git a/chrome/browser/download/android/java/src/org/chromium/chrome/browse
      private boolean mLocationDialogManaged;
  
      /**
-@@ -140,7 +140,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
+@@ -141,7 +141,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
       * Called after retrieved the download directory options.
       * @param dirs An list of available download directories.
       */
@@ -1384,7 +1384,7 @@ diff --git a/chrome/browser/download/android/java/src/org/chromium/chrome/browse
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
-@@ -175,6 +175,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
+@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
      &kCacheActivityTaskID,
      &kCastDeviceFilter,
      &kClearOmniboxFocusAfterNavigation,
@@ -1395,7 +1395,7 @@ diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browse
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -499,6 +499,7 @@ public abstract class ChromeFeatureList {
+@@ -504,6 +504,7 @@ public abstract class ChromeFeatureList {
              "UseLibunwindstackNativeUnwinderAndroid";
      public static final String VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR =
              "VerticalAutomotiveBackButtonToolbar";
@@ -1458,7 +1458,7 @@ diff --git a/chrome/browser/preferences/android/java/src/org/chromium/chrome/bro
  
      /**
       * Whether Chrome is set as the default browser.
-@@ -899,6 +901,7 @@ public final class ChromePreferenceKeys {
+@@ -900,6 +902,7 @@ public final class ChromePreferenceKeys {
                  AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
                  APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                  APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
@@ -1469,7 +1469,7 @@ diff --git a/chrome/browser/preferences/android/java/src/org/chromium/chrome/bro
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -248,6 +248,24 @@ CHAR_LIMIT guidelines:
+@@ -253,6 +253,24 @@ CHAR_LIMIT guidelines:
        <message name="IDS_NOTIFICATION_CATEGORY_SITES" desc="Label for notifications from websites, within a list of notification categories. [CHAR_LIMIT=32]">
          Sites
        </message>
@@ -1497,7 +1497,7 @@ diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chro
 diff --git a/chrome/common/BUILD.gn b/chrome/common/BUILD.gn
 --- a/chrome/common/BUILD.gn
 +++ b/chrome/common/BUILD.gn
-@@ -401,6 +401,9 @@ static_library("common_lib") {
+@@ -400,6 +400,9 @@ static_library("common_lib") {
      sources += [
        "media/chrome_media_drm_bridge_client.cc",
        "media/chrome_media_drm_bridge_client.h",
@@ -1510,7 +1510,7 @@ diff --git a/chrome/common/BUILD.gn b/chrome/common/BUILD.gn
 diff --git a/chrome/utility/BUILD.gn b/chrome/utility/BUILD.gn
 --- a/chrome/utility/BUILD.gn
 +++ b/chrome/utility/BUILD.gn
-@@ -84,8 +84,6 @@ static_library("utility") {
+@@ -85,8 +85,6 @@ static_library("utility") {
  
    if (!is_android) {
      sources += [
@@ -1519,7 +1519,7 @@ diff --git a/chrome/utility/BUILD.gn b/chrome/utility/BUILD.gn
        "importer/bookmarks_file_importer.cc",
        "importer/bookmarks_file_importer.h",
        "importer/external_process_importer_bridge.cc",
-@@ -220,6 +218,11 @@ static_library("utility") {
+@@ -224,6 +222,11 @@ static_library("utility") {
      ]
    }
  

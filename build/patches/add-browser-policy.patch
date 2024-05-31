@@ -8,6 +8,7 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
  chrome/android/java/AndroidManifest.xml       |   4 -
  .../privacy_preferences_manager_impl.cc       |   5 +
  .../metrics/chrome_feature_list_creator.cc    |  12 ++
+ .../search_engine_preconnector.cc             |   2 +
  .../policy/chrome_browser_policy_connector.cc |   3 -
  ...nfiguration_policy_handler_list_factory.cc |   6 +-
  .../account_consistency_mode_manager.cc       |   7 +-
@@ -35,12 +36,12 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
  .../gaia_cookie_manager_service.cc            |   4 +
  google_apis/gaia/gaia_auth_fetcher.cc         |   1 +
  net/socket/ssl_client_socket_impl.cc          |   3 +
- 31 files changed, 317 insertions(+), 150 deletions(-)
+ 32 files changed, 319 insertions(+), 150 deletions(-)
 
 diff --git a/base/win/win_util.cc b/base/win/win_util.cc
 --- a/base/win/win_util.cc
 +++ b/base/win/win_util.cc
-@@ -126,76 +126,19 @@ bool EnablePerMonitorV2() {
+@@ -128,76 +128,19 @@ bool EnablePerMonitorV2() {
  }
  
  bool* GetDomainEnrollmentStateStorage() {
@@ -141,7 +142,7 @@ diff --git a/chrome/android/java/AndroidManifest.xml b/chrome/android/java/Andro
      <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
      <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
      <uses-permission android:name="android.permission.VIBRATE"/>
-@@ -130,7 +127,6 @@ by a child template that "extends" this file.
+@@ -133,7 +130,6 @@ by a child template that "extends" this file.
      <uses-permission android:name="com.chrome.permission.DEVICE_EXTRAS" />
      <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
  
@@ -176,7 +177,7 @@ diff --git a/chrome/browser/metrics/chrome_feature_list_creator.cc b/chrome/brow
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
  #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-@@ -224,6 +226,16 @@ void ChromeFeatureListCreator::CreatePrefService() {
+@@ -222,6 +224,16 @@ void ChromeFeatureListCreator::CreatePrefService() {
    // ManagementService's cache.
    if (local_state_pref_store->ReadPrefs() ==
        JsonPrefStore::PREF_READ_ERROR_NONE) {
@@ -193,6 +194,18 @@ diff --git a/chrome/browser/metrics/chrome_feature_list_creator.cc b/chrome/brow
      auto* platform_management_service =
          policy::ManagementServiceFactory::GetForPlatform();
      platform_management_service->UsePrefStoreAsCache(local_state_pref_store);
+diff --git a/chrome/browser/navigation_predictor/search_engine_preconnector.cc b/chrome/browser/navigation_predictor/search_engine_preconnector.cc
+--- a/chrome/browser/navigation_predictor/search_engine_preconnector.cc
++++ b/chrome/browser/navigation_predictor/search_engine_preconnector.cc
+@@ -42,6 +42,8 @@ BASE_FEATURE(kPreconnectToSearch,
+ BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled,
+              "PreconnectToSearchWithPrivacyModeEnabled",
+              base::FEATURE_DISABLED_BY_DEFAULT);
++SET_CROMITE_FEATURE_DISABLED(kPreconnectToSearch);
++SET_CROMITE_FEATURE_DISABLED(kPreconnectToSearchWithPrivacyModeEnabled);
+ }  // namespace features
+ 
+ SearchEnginePreconnector::SearchEnginePreconnector(
 diff --git a/chrome/browser/policy/chrome_browser_policy_connector.cc b/chrome/browser/policy/chrome_browser_policy_connector.cc
 --- a/chrome/browser/policy/chrome_browser_policy_connector.cc
 +++ b/chrome/browser/policy/chrome_browser_policy_connector.cc
@@ -209,7 +222,7 @@ diff --git a/chrome/browser/policy/chrome_browser_policy_connector.cc b/chrome/b
 diff --git a/chrome/browser/policy/configuration_policy_handler_list_factory.cc b/chrome/browser/policy/configuration_policy_handler_list_factory.cc
 --- a/chrome/browser/policy/configuration_policy_handler_list_factory.cc
 +++ b/chrome/browser/policy/configuration_policy_handler_list_factory.cc
-@@ -2184,9 +2184,9 @@ bool AreFuturePoliciesEnabledByDefault() {
+@@ -2190,9 +2190,9 @@ bool AreFuturePoliciesEnabledByDefault() {
    if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
      return true;
    }
@@ -307,7 +320,7 @@ diff --git a/chrome/browser/signin/bound_session_credentials/throttled_gaia_auth
 diff --git a/chrome/browser/signin/chrome_signin_client.cc b/chrome/browser/signin/chrome_signin_client.cc
 --- a/chrome/browser/signin/chrome_signin_client.cc
 +++ b/chrome/browser/signin/chrome_signin_client.cc
-@@ -235,7 +235,9 @@ void ChromeSigninClient::DoFinalInit() {
+@@ -232,7 +232,9 @@ void ChromeSigninClient::DoFinalInit() {
  bool ChromeSigninClient::ProfileAllowsSigninCookies(Profile* profile) {
    scoped_refptr<content_settings::CookieSettings> cookie_settings =
        CookieSettingsFactory::GetForProfile(profile);
@@ -318,7 +331,7 @@ diff --git a/chrome/browser/signin/chrome_signin_client.cc b/chrome/browser/sign
  }
  
  PrefService* ChromeSigninClient::GetPrefs() {
-@@ -358,6 +360,9 @@ bool ChromeSigninClient::AreNetworkCallsDelayed() {
+@@ -355,6 +357,9 @@ bool ChromeSigninClient::AreNetworkCallsDelayed() {
  }
  
  void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
@@ -331,13 +344,13 @@ diff --git a/chrome/browser/signin/chrome_signin_client.cc b/chrome/browser/sign
 diff --git a/chrome/browser/signin/dice_response_handler.cc b/chrome/browser/signin/dice_response_handler.cc
 --- a/chrome/browser/signin/dice_response_handler.cc
 +++ b/chrome/browser/signin/dice_response_handler.cc
-@@ -464,8 +464,10 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
+@@ -467,8 +467,10 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
    // - If there is a policy restriction on removing the primary account.
    bool invalidate_only_primary_account =
        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
 +#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-       switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-           switches::ExplicitBrowserSigninPhase::kFull) ||
+       !signin::IsImplicitBrowserSigninOrExplicitDisabled(
+           identity_manager_, signin_client_->GetPrefs()) ||
 +#endif
        !signin_client_->IsClearPrimaryAccountAllowed(
            /*has_sync_account=*/false);
@@ -492,7 +505,7 @@ diff --git a/chrome/browser/ui/webui/policy/policy_ui_handler.h b/chrome/browser
 diff --git a/components/browser_ui/strings/android/browser_ui_strings.grd b/components/browser_ui/strings/android/browser_ui_strings.grd
 --- a/components/browser_ui/strings/android/browser_ui_strings.grd
 +++ b/components/browser_ui/strings/android/browser_ui_strings.grd
-@@ -381,7 +381,7 @@
+@@ -374,7 +374,7 @@
  
        <!-- Settings UI -->
        <message name="IDS_MANAGED_BY_YOUR_ORGANIZATION" desc="Popup message when the user clicks a UI element that has been disabled by enterprise policy.">
@@ -561,7 +574,7 @@ diff --git a/components/commerce/core/commerce_feature_list.cc b/components/comm
  }  // namespace
  
  namespace switches {
-@@ -318,6 +268,16 @@ const char kParcelTrackingTestDataParamDelivered[] = "Delivered";
+@@ -322,6 +272,16 @@ const char kParcelTrackingTestDataParamDelivered[] = "Delivered";
  const char kParcelTrackingTestDataParamInProgress[] = "InProgress";
  const char kParcelTrackingTestDataParamOutForDelivery[] = "OutForDelivery";
  
@@ -578,7 +591,7 @@ diff --git a/components/commerce/core/commerce_feature_list.cc b/components/comm
  // Params for Discount Consent V2 in the NTP Cart module.
  const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
      "discount-consent-ntp-variation";
-@@ -443,11 +403,11 @@ bool IsPartnerMerchant(const GURL& url) {
+@@ -447,11 +407,11 @@ bool IsPartnerMerchant(const GURL& url) {
  }
  
  bool IsRuleDiscountPartnerMerchant(const GURL& url) {
@@ -592,7 +605,7 @@ diff --git a/components/commerce/core/commerce_feature_list.cc b/components/comm
  }
  
  bool IsCartDiscountFeatureEnabled() {
-@@ -530,6 +490,7 @@ base::TimeDelta GetDiscountFetchDelay() {
+@@ -534,6 +494,7 @@ base::TimeDelta GetDiscountFetchDelay() {
  }
  
  bool IsNoDiscountMerchant(const GURL& url) {
@@ -915,7 +928,7 @@ diff --git a/components/policy/resources/webui/policy_row.ts b/components/policy
 diff --git a/components/policy_strings.grdp b/components/policy_strings.grdp
 --- a/components/policy_strings.grdp
 +++ b/components/policy_strings.grdp
-@@ -636,8 +636,8 @@ Additional details:
+@@ -645,8 +645,8 @@ Additional details:
    <message name="IDS_POLICY_SOURCE_DEFAULT" desc="Indicates that a policy is set by default and can be overridden.">
      Default
    </message>
@@ -981,7 +994,7 @@ diff --git a/net/socket/ssl_client_socket_impl.cc b/net/socket/ssl_client_socket
    // Disable SHA-1 server signatures.
    // TODO(crbug.com/boringssl/699): Once the default is flipped in BoringSSL, we
    // no longer need to override it.
-@@ -1180,6 +1181,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
+@@ -1179,6 +1180,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
  
    cert_verifier_request_.reset();
  

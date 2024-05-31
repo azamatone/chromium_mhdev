@@ -12,7 +12,7 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
 diff --git a/content/child/runtime_features.cc b/content/child/runtime_features.cc
 --- a/content/child/runtime_features.cc
 +++ b/content/child/runtime_features.cc
-@@ -588,6 +588,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
+@@ -578,6 +578,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
      WebRuntimeFeatures::EnableV8IdleTasks(true);
    }
  
@@ -36,7 +36,7 @@ diff --git a/gpu/config/gpu_finch_features.cc b/gpu/config/gpu_finch_features.cc
 diff --git a/third_party/blink/renderer/modules/webgpu/gpu.cc b/third_party/blink/renderer/modules/webgpu/gpu.cc
 --- a/third_party/blink/renderer/modules/webgpu/gpu.cc
 +++ b/third_party/blink/renderer/modules/webgpu/gpu.cc
-@@ -380,6 +380,7 @@ ScriptPromiseTyped<IDLNullable<GPUAdapter>> GPU::requestAdapter(
+@@ -380,6 +380,7 @@ ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
          "WebGPU is experimental on this platform. See "
          "https://github.com/gpuweb/gpuweb/wiki/"
          "Implementation-Status#implementation-status"));

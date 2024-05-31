@@ -82,15 +82,15 @@ diff --git a/chrome/android/java/src/org/chromium/chrome/browser/bookmarks/Bookm
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -806,7 +806,7 @@ public abstract class ChromeFeatureList {
-     public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
-             newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
+@@ -812,7 +812,7 @@ public abstract class ChromeFeatureList {
+     public static final MutableFlagWithSafeDefault sAdaptiveButtonInTopToolbarCustomizationV2 =
+             newMutableFlagWithSafeDefault(ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, false);
      public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
 -            newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
 +            newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, true);
-     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
-             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
-     public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
+     public static final MutableFlagWithSafeDefault sAnimateSuggestionsListAppearance =
+             newMutableFlagWithSafeDefault(ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
+     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
 diff --git a/components/bookmarks/browser/bookmark_node.cc b/components/bookmarks/browser/bookmark_node.cc
 --- a/components/bookmarks/browser/bookmark_node.cc
 +++ b/components/bookmarks/browser/bookmark_node.cc

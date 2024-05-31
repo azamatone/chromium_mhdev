@@ -97,7 +97,7 @@ diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
  
  import("//build/android/resource_sizes.gni")
  import("//build/config/android/config.gni")
-@@ -499,6 +503,7 @@ if (current_toolchain == default_toolchain) {
+@@ -510,6 +514,7 @@ if (current_toolchain == default_toolchain) {
        "//chrome/browser/xsurface_provider:java",
        "//components/android_autofill/browser:java",
        "//components/autofill/android:autofill_features_java",
@@ -105,7 +105,7 @@ diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
        "//components/autofill/android:autofill_java",
        "//components/background_task_scheduler:background_task_scheduler_java",
        "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
-@@ -1623,6 +1628,7 @@ if (current_toolchain == default_toolchain) {
+@@ -1644,6 +1649,7 @@ if (current_toolchain == default_toolchain) {
        "//chrome/android/webapk/libs/client:client_java",
        "//chrome/android/webapk/libs/common:common_java",
        "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
@@ -113,7 +113,7 @@ diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
        "//chrome/browser/android/browserservices/intents:java",
        "//chrome/browser/android/browserservices/verification:java",
        "//chrome/browser/android/browserservices/verification:javatests",
-@@ -1968,6 +1974,7 @@ if (current_toolchain == default_toolchain) {
+@@ -1997,6 +2003,7 @@ if (current_toolchain == default_toolchain) {
      srcjar_deps = [ "//chrome/browser:tos_dialog_behavior_generated_enum" ]
  
      data = [
@@ -121,7 +121,7 @@ diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
        "//chrome/test/data/android/",
        "//chrome/test/data/autofill/",
        "//chrome/test/data/background_sync/",
-@@ -3816,6 +3823,7 @@ group("jni_headers") {
+@@ -3850,6 +3857,7 @@ group("jni_headers") {
      "//chrome/browser/util:jni_headers",
      "//chrome/browser/webauthn/android:jni_headers",
      "//components/browser_ui/device_lock/android:device_lock_bridge_jni_headers",
@@ -132,7 +132,7 @@ diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -3459,6 +3459,17 @@ static_library("browser") {
+@@ -3520,6 +3520,17 @@ static_library("browser") {
        "webauthn/android/webauthn_request_delegate_android.h",
      ]
  
@@ -150,7 +150,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
  
      public_deps += [
        "//chrome/android/features/dev_ui:buildflags",
-@@ -3649,6 +3660,9 @@ static_library("browser") {
+@@ -3717,6 +3728,9 @@ static_library("browser") {
        "//url",
      ]
  
@@ -652,7 +652,7 @@ new file mode 100644
 diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
 --- a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
 +++ b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
-@@ -275,6 +275,11 @@
+@@ -279,6 +279,11 @@
  #include "components/commerce/core/commerce_feature_list.h"
  #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
  
@@ -664,7 +664,7 @@ diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
  
  #else
  #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
-@@ -846,6 +851,11 @@ void ChromeBrowserMainExtraPartsProfiles::
+@@ -844,6 +849,11 @@ void ChromeBrowserMainExtraPartsProfiles::
  #if BUILDFLAG(IS_ANDROID)
    FastCheckoutCapabilitiesFetcherFactory::GetInstance();
  

@@ -11,9 +11,9 @@ License: GPL-2.0-or-later - https://spdx.org/licenses/GPL-2.0-or-later.html
  .../java/res/xml/privacy_preferences.xml      |  7 ++++
  .../flags/cromite/sTabSwitcherListMode.java   | 33 +++++++++++++++++++
  .../Use-list-mode-for-tab-switcher.grdp       |  9 +++++
- .../browser/toolbar/top/ToolbarPhone.java     | 15 ++++++---
+ .../browser/toolbar/top/ToolbarPhone.java     |  9 +++--
  .../tab-switcher-list-mode.inc                |  3 ++
- 6 files changed, 64 insertions(+), 7 deletions(-)
+ 6 files changed, 58 insertions(+), 7 deletions(-)
  create mode 100644 chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/cromite/sTabSwitcherListMode.java
  create mode 100644 chrome/browser/ui/android/strings/cromite_android_chrome_strings_grd/Use-list-mode-for-tab-switcher.grdp
  create mode 100644 cromite_flags/chrome/browser/flags/android/chrome_feature_list_cc/tab-switcher-list-mode.inc
@@ -111,30 +111,20 @@ new file mode 100644
 diff --git a/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java b/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java
 --- a/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java
 +++ b/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java
-@@ -53,6 +53,7 @@ import org.chromium.base.TraceEvent;
- import org.chromium.base.supplier.ObservableSupplier;
- import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
- import org.chromium.chrome.browser.flags.ChromeFeatureList;
-+import org.chromium.chrome.browser.flags.cromite.sTabSwitcherListMode;
- import org.chromium.chrome.browser.omnibox.LocationBar;
- import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
- import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-@@ -520,7 +521,8 @@ public class ToolbarPhone extends ToolbarLayout
+@@ -505,7 +505,6 @@ public class ToolbarPhone extends ToolbarLayout
  
      private void inflateTabSwitchingResources() {
          mToggleTabStackButton = findViewById(R.id.tab_switcher_button);
 -        mToggleTabStackButton.setClickable(false);
-+        if (!sTabSwitcherListMode.getInstance().isEnabled())
-+            mToggleTabStackButton.setClickable(false);
      }
  
      private void enableTabSwitchingResources() {
-@@ -2022,14 +2024,15 @@ public class ToolbarPhone extends ToolbarLayout
+@@ -1998,14 +1997,14 @@ public class ToolbarPhone extends ToolbarLayout
          // On entering the tab switcher, set the focusability of the url bar to be false. This will
          // occur at the start of the enter event, and will later be reset to true upon finishing the
          // exit event only in #onStartSurfaceStateChanged.
 -        if (inTabSwitcherMode) {
-+        if (inTabSwitcherMode && !sTabSwitcherListMode.getInstance().isEnabled()) {
++        if (inTabSwitcherMode && ((false))) {
              mLocationBar.setUrlBarFocusable(false);
          }
  
@@ -142,28 +132,25 @@ diff --git a/chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/brow
          // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
          // is always called before setTabSwitcherMode(), so skip here.
 -        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
-+        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()
-+                && !sTabSwitcherListMode.getInstance().isEnabled()) {
++        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode() && ((false))) {
              // Prevent pressing the tab switcher button until after transition finishes.
              mToggleTabStackButton.setClickable(false);
              return;
-@@ -2049,7 +2052,8 @@ public class ToolbarPhone extends ToolbarLayout
+@@ -2025,7 +2024,7 @@ public class ToolbarPhone extends ToolbarLayout
              return;
          }
          // Prevent pressing the tab switcher button until after transition finishes.
 -        mToggleTabStackButton.setClickable(false);
-+        if (!sTabSwitcherListMode.getInstance().isEnabled())
-+            mToggleTabStackButton.setClickable(false);
++        // mToggleTabStackButton.setClickable(false);
  
          mTabSwitcherState = inTabSwitcherMode ? ENTERING_TAB_SWITCHER : EXITING_TAB_SWITCHER;
  
-@@ -2143,7 +2147,8 @@ public class ToolbarPhone extends ToolbarLayout
+@@ -2119,7 +2118,7 @@ public class ToolbarPhone extends ToolbarLayout
          }
          if (mTabSwitcherState == ENTERING_TAB_SWITCHER) {
              mTabSwitcherState = TAB_SWITCHER;
 -            mToggleTabStackButton.setClickable(false);
-+            if (!sTabSwitcherListMode.getInstance().isEnabled())
-+                mToggleTabStackButton.setClickable(false);
++            // mToggleTabStackButton.setClickable(false);
          }
          // Ensure clickable if in STATIC_TAB mode. This handles both when the state transitions
          // are ignored in favor of onStartSurfaceStateChanged() and when normal transitions occur.

@@ -102,7 +102,7 @@ diff --git a/chrome/app/chrome_main_delegate.cc b/chrome/app/chrome_main_delegat
  
  #include "chrome/app/chrome_main_delegate.h"
  
-@@ -41,6 +45,7 @@
+@@ -37,6 +41,7 @@
  #include "base/trace_event/trace_event_impl.h"
  #include "build/build_config.h"
  #include "build/chromeos_buildflags.h"
@@ -110,7 +110,7 @@ diff --git a/chrome/app/chrome_main_delegate.cc b/chrome/app/chrome_main_delegat
  #include "chrome/browser/buildflags.h"
  #include "chrome/browser/chrome_content_browser_client.h"
  #include "chrome/browser/chrome_resource_bundle_helper.h"
-@@ -1950,7 +1955,7 @@ content::ContentClient* ChromeMainDelegate::CreateContentClient() {
+@@ -1928,7 +1933,7 @@ content::ContentClient* ChromeMainDelegate::CreateContentClient() {
  content::ContentBrowserClient*
  ChromeMainDelegate::CreateContentBrowserClient() {
    chrome_content_browser_client_ =
@@ -132,7 +132,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
  
  import("//base/allocator/allocator.gni")
  import("//build/buildflag_header.gni")
-@@ -153,6 +156,26 @@ static_library("browser") {
+@@ -155,6 +158,26 @@ static_library("browser") {
      "accessibility/prefers_default_scrollbar_styles_prefs.h",
      "affiliations/affiliation_service_factory.cc",
      "affiliations/affiliation_service_factory.h",
@@ -159,24 +159,24 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
      "after_startup_task_utils.cc",
      "after_startup_task_utils.h",
      "app_mode/app_mode_utils.cc",
-@@ -2130,6 +2153,7 @@ static_library("browser") {
+@@ -2167,6 +2190,7 @@ static_library("browser") {
      "//chrome/browser/ui/color:color_headers",
      "//chrome/browser/ui/color:mixers",
      "//chrome/browser/ui/webui:configs",
 +    "//chrome/browser/ui/webui/adblock_internals:mojo_bindings",
      "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
+     "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
      "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
-     "//chrome/browser/ui/webui/location_internals:mojo_bindings",
-@@ -2151,6 +2175,8 @@ static_library("browser") {
-     "//chrome/common/notifications",
+@@ -2191,6 +2215,8 @@ static_library("browser") {
      "//chrome/installer/util:with_no_strings",
+     "//chrome/services/bundz_translation:bundz_translation_service",
      "//chrome/services/speech/buildflags",
 +    "//components/adblock/content:browser",
 +    "//components/adblock/core/converter",
      "//components/assist_ranker",
      "//components/autofill/content/browser",
      "//components/autofill/content/common:features",
-@@ -3432,6 +3458,8 @@ static_library("browser") {
+@@ -3493,6 +3519,8 @@ static_library("browser") {
        "webauthn/android/webauthn_request_delegate_android.cc",
        "webauthn/android/webauthn_request_delegate_android.h",
      ]
@@ -185,7 +185,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
      public_deps += [
        "//chrome/android/features/dev_ui:buildflags",
        "//components/image_fetcher/core",
-@@ -3621,6 +3649,7 @@ static_library("browser") {
+@@ -3689,6 +3717,7 @@ static_library("browser") {
        "//url",
      ]
  
@@ -2039,15 +2039,15 @@ diff --git a/chrome/browser/chrome_browser_interface_binders.cc b/chrome/browser
  
  #include "chrome/browser/chrome_browser_interface_binders.h"
  
-@@ -38,6 +42,7 @@
+@@ -37,6 +41,7 @@
+ #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
  #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
  #include "chrome/browser/ui/ui_features.h"
- #include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
 +#include "chrome/browser/ui/webui/adblock_internals/adblock_internals_ui.h"
  #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
  #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
  #include "chrome/browser/ui/webui/internals/internals_ui.h"
-@@ -1095,6 +1100,10 @@ void PopulateChromeWebUIFrameBinders(
+@@ -1098,6 +1103,10 @@ void PopulateChromeWebUIFrameBinders(
        media::mojom::MediaEngagementScoreDetailsProvider, MediaEngagementUI>(
        map);
  
@@ -2102,7 +2102,7 @@ diff --git a/chrome/browser/prefs/chrome_pref_service_factory.cc b/chrome/browse
  #include "components/component_updater/pref_names.h"
  #include "components/policy/core/browser/configuration_policy_pref_store.h"
  #include "components/pref_registry/pref_registry_syncable.h"
-@@ -186,6 +191,12 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
+@@ -182,6 +187,12 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
       PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
  #endif  // BUILDFLAG(IS_WIN)
@@ -2145,8 +2145,8 @@ diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
  #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
  #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
  #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
-@@ -261,6 +274,8 @@
- #include "chrome/browser/signin/signin_manager_android_factory.h"
+@@ -265,6 +278,8 @@
+ #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
  #include "components/commerce/core/commerce_feature_list.h"
  #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 +
@@ -2154,7 +2154,7 @@ diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
  #else
  #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
  #include "chrome/browser/accessibility/live_translate_controller_factory.h"
-@@ -819,8 +834,19 @@ void ChromeBrowserMainExtraPartsProfiles::
+@@ -817,8 +832,19 @@ void ChromeBrowserMainExtraPartsProfiles::
    // Makes manual testing possible.
    FakeSmartCardDeviceServiceFactory::GetInstance();
  #endif
@@ -2187,7 +2187,7 @@ diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.
  
  import("//build/config/chromeos/ui_mode.gni")
  import("//chrome/browser/buildflags.gni")
-@@ -225,6 +228,7 @@ if (!is_android) {
+@@ -234,6 +237,7 @@ if (!is_android) {
  group("dev_ui_resources") {
    public_deps = [
      "accessibility:resources",
@@ -2195,7 +2195,7 @@ diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.
      "bluetooth_internals:resources",
      "browsing_topics:resources",
      "components:resources",
-@@ -283,6 +287,7 @@ repack("dev_ui_paks") {
+@@ -292,6 +296,7 @@ repack("dev_ui_paks") {
  
    sources = [
      "$root_gen_dir/chrome/accessibility_resources.pak",
@@ -2340,9 +2340,9 @@ diff --git a/chrome/browser/safe_browsing/safe_browsing_blocking_page_test.cc b/
 +// Use of this source code is governed by the GPLv3 that can be found in the
 +// components/adblock/LICENSE file.
  
- #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
- 
-@@ -67,6 +71,7 @@
+ #include <algorithm>
+ #include <map>
+@@ -66,6 +70,7 @@
  #include "chrome/common/url_constants.h"
  #include "chrome/test/base/in_process_browser_test.h"
  #include "chrome/test/base/ui_test_utils.h"
@@ -2405,7 +2405,7 @@ diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
  
  import("//build/config/buildflags_paint_preview.gni")
  import("//build/config/chromeos/ui_mode.gni")
-@@ -246,6 +250,10 @@ static_library("ui") {
+@@ -248,6 +252,10 @@ static_library("ui") {
      "webui/about/about_ui.h",
      "webui/accessibility/accessibility_ui.cc",
      "webui/accessibility/accessibility_ui.h",
@@ -2416,15 +2416,15 @@ diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
      "webui/autofill_and_password_manager_internals/autofill_internals_ui.cc",
      "webui/autofill_and_password_manager_internals/autofill_internals_ui.h",
      "webui/autofill_and_password_manager_internals/internals_ui_handler.cc",
-@@ -454,6 +462,7 @@ static_library("ui") {
-     "//chrome/browser/storage_access_api",
+@@ -463,6 +471,7 @@ static_library("ui") {
      "//chrome/browser/ui/side_panel:side_panel_enums",
+     "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
      "//chrome/browser/ui/webui/location_internals:mojo_bindings",
 +    "//chrome/browser/ui/webui/adblock_internals:mojo_bindings",
      "//chrome/browser/ui/webui/omnibox:mojo_bindings",
      "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
      "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
-@@ -470,6 +479,7 @@ static_library("ui") {
+@@ -479,6 +488,7 @@ static_library("ui") {
      "//components/access_code_cast/common:metrics",
      "//components/account_id",
      "//components/affiliations/core/browser:affiliations",
@@ -2493,7 +2493,7 @@ diff --git a/chrome/browser/ui/tab_helpers.cc b/chrome/browser/ui/tab_helpers.cc
  #include "chrome/browser/bookmarks/bookmark_model_factory.h"
  #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
  #include "chrome/browser/browser_process.h"
-@@ -112,6 +119,7 @@
+@@ -114,6 +121,7 @@
  #include "chrome/common/chrome_features.h"
  #include "chrome/common/chrome_isolated_world_ids.h"
  #include "chrome/common/chrome_switches.h"
@@ -2866,24 +2866,24 @@ diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrom
  
  #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
  
-@@ -30,6 +34,7 @@
+@@ -32,6 +36,7 @@
  #include "chrome/browser/safe_browsing/chrome_safe_browsing_local_state_delegate.h"
  #include "chrome/browser/signin/signin_features.h"
  #include "chrome/browser/ui/webui/about/about_ui.h"
 +#include "chrome/browser/ui/webui/adblock_internals/adblock_internals_ui.h"
- #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
  #include "chrome/browser/ui/webui/components/components_ui.h"
  #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-@@ -430,6 +435,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
- 
-   if (url.host_piece() == chrome::kChromeUIBrowsingTopicsInternalsHost)
-     return &NewWebUI<BrowsingTopicsInternalsUI>;
+ #include "chrome/browser/ui/webui/crashes_ui.h"
+@@ -494,6 +499,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
+     return &NewWebUI<UsbInternalsUI>;
+   if (url.host_piece() == chrome::kChromeUIUserActionsHost)
+     return &NewWebUI<UserActionsUI>;
 +  if (url.host_piece() == chrome::kChromeUIAdblockInternalsHost) {
 +    return &NewWebUI<AdblockInternalsUI>;
 +  }
-   if (url.host_piece() == chrome::kChromeUIComponentsHost)
-     return &NewWebUI<ComponentsUI>;
- #if !BUILDFLAG(IS_ANDROID)
+   if (url.host_piece() == chrome::kChromeUIVersionHost)
+     return &NewWebUI<VersionUI>;
+ #if BUILDFLAG(IS_ANDROID)
 diff --git a/chrome/common/BUILD.gn b/chrome/common/BUILD.gn
 --- a/chrome/common/BUILD.gn
 +++ b/chrome/common/BUILD.gn
@@ -2933,7 +2933,7 @@ diff --git a/chrome/common/webui_url_constants.h b/chrome/common/webui_url_const
  
  // Contains constants for WebUI UI/Host/SubPage constants. Anything else go in
  // chrome/common/url_constants.h.
-@@ -32,6 +36,7 @@ extern const char kChromeUIAboutHost[];
+@@ -31,6 +35,7 @@ extern const char kChromeUIAboutHost[];
  extern const char kChromeUIAboutURL[];
  extern const char kChromeUIActivateSafetyCheckSettingsURL[];
  extern const char kChromeUIAccessibilityHost[];

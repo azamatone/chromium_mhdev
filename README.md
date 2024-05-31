@@ -115,6 +115,8 @@ For any usage or development discussion please use GitHub Discussions: https://g
   * [Inox patchset](https://github.com/gcarq/inox-patchset) for some patches (via ungoogled-chromium)
   * [Brave Browser](https://github.com/brave/brave-core) for some patches
 
+thanks to [austinhuang0131](https://github.com/austinhuang0131) for the svg icon
+
 # License
 
 Cromite is published under [GNU GPL v3](./LICENSE).

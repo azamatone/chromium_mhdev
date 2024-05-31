@@ -92,7 +92,7 @@ diff --git a/content/browser/client_hints/client_hints.cc b/content/browser/clie
 diff --git a/content/browser/loader/navigation_url_loader_impl.cc b/content/browser/loader/navigation_url_loader_impl.cc
 --- a/content/browser/loader/navigation_url_loader_impl.cc
 +++ b/content/browser/loader/navigation_url_loader_impl.cc
-@@ -1179,6 +1179,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
+@@ -1185,6 +1185,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
      return;
    }
  
@@ -133,7 +133,7 @@ new file mode 100644
 diff --git a/net/http/http_network_transaction.cc b/net/http/http_network_transaction.cc
 --- a/net/http/http_network_transaction.cc
 +++ b/net/http/http_network_transaction.cc
-@@ -101,6 +101,7 @@ const size_t kMaxRestarts = 32;
+@@ -102,6 +102,7 @@ const size_t kMaxRestarts = 32;
  
  // Returns true when Early Hints are allowed on the given protocol.
  bool EarlyHintsAreAllowedOn(HttpConnectionInfo connection_info) {
@@ -222,7 +222,7 @@ diff --git a/third_party/blink/renderer/core/frame/navigator_ua.idl b/third_part
 diff --git a/third_party/blink/renderer/core/frame/navigator_ua_data.cc b/third_party/blink/renderer/core/frame/navigator_ua_data.cc
 --- a/third_party/blink/renderer/core/frame/navigator_ua_data.cc
 +++ b/third_party/blink/renderer/core/frame/navigator_ua_data.cc
-@@ -220,6 +220,7 @@ ScriptPromiseTyped<UADataValues> NavigatorUAData::getHighEntropyValues(
+@@ -219,6 +219,7 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
    Dactyloscoper::RecordDirectSurface(
        GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
  
@@ -278,9 +278,9 @@ diff --git a/third_party/blink/renderer/core/loader/base_fetch_context.cc b/thir
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -324,6 +324,11 @@
-       name: "AsyncClipboardImplicitPermission",
-       status: "stable",
+@@ -340,6 +340,11 @@
+       name: "AtomicMoveOverride",
+       // No "status" field, so that this is not enabled on WPTs by default.
      },
 +    {
 +      name: "UserAgentClientHint",
