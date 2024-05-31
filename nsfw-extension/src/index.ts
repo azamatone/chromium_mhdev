@@ -14,11 +14,12 @@ function domReady(cb: Function): void {
     }
 }
 // @ts-ignore
-let counter = counter || new NoopCounter();
+window.counter = counter || new NoopCounter();
 
 loadModel('https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mobilenet_v2/').then(nsfwModel => {
     domReady(()=>{
-        let model = new Model(nsfwModel, {filterStrictness: 80}, counter);
+        // @ts-ignore
+        let model = new Model(nsfwModel, {filterStrictness: 80}, window.counter);
         let queue = new Queue(model);
         let observer = new DomObserver(queue);
         observer.watch();
