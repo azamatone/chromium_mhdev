@@ -20,6 +20,8 @@ loadModel('https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mob
     domReady(()=>{
         // @ts-ignore
         let model = new Model(nsfwModel, {filterStrictness: 80}, window.counter);
+        // @ts-ignore
+        delete window.counter;
         let queue = new Queue(model);
         let observer = new DomObserver(queue);
         observer.watch();

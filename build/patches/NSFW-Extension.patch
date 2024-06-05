@@ -1,33 +1,34 @@
-From 6f9348eda897276f3cd4b94294684202f463ce30 Mon Sep 17 00:00:00 2001
-From: Ubuntu
- <azureuser@yarm-vm.xxomexahps5uxgt3zmdhunfqxb.bx.internal.cloudapp.net>
-Date: Sun, 2 Jun 2024 03:05:28 +0000
-Subject: [PATCH] nsfw java extension
+From 034ccfced359cdf71e7ad8dd585a8435957d6ed6 Mon Sep 17 00:00:00 2001
+From: Elbek Rocky <elbek@rocky.local>
+Date: Tue, 4 Jun 2024 00:49:29 -0400
+Subject: [PATCH] nsfw extension with counter
 
 ---
  chrome/android/chrome_java_resources.gni      |     2 +
- chrome/android/chrome_java_sources.gni        |     4 +
+ chrome/android/chrome_java_sources.gni        |     5 +
  chrome/android/java/res/raw/nsfw.js           | 16245 ++++++++++++++++
  .../java/res/xml/privacy_preferences.xml      |     4 +
- .../chrome/browser/app/ChromeActivity.java    |    14 +
+ .../chrome/browser/app/ChromeActivity.java    |    16 +
  .../privacy/settings/PrivacySettings.java     |    10 +
- .../chromium/chrome/browser/yawm/Counter.java |    13 +
- .../chromium/chrome/browser/yawm/YAWM.java    |   118 +
+ .../chromium/chrome/browser/yawm/Counter.java |    40 +
+ .../chromium/chrome/browser/yawm/YAWM.java    |   114 +
+ .../chrome/browser/yawm/YAWMFactory.java      |    14 +
  .../chrome/browser/yawm/YAWMSupplier.java     |    32 +
  chrome/browser/profiles/profile_impl.cc       |     2 +
  chrome/common/pref_names.h                    |     3 +
  .../web_contents/web_contents_android.cc      |     2 +
- 12 files changed, 16449 insertions(+)
+ 13 files changed, 16489 insertions(+)
  create mode 100644 chrome/android/java/res/raw/nsfw.js
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/yawm/Counter.java
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWM.java
+ create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMFactory.java
  create mode 100644 chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMSupplier.java
 
 diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
-index 12b9d4678386b..f595afd56d517 100644
+index cdb3c68a13da9..603e75be0571c 100644
 --- a/chrome/android/chrome_java_resources.gni
 +++ b/chrome/android/chrome_java_resources.gni
-@@ -650,4 +650,6 @@ chrome_java_resources = [
+@@ -646,4 +646,6 @@ chrome_java_resources = [
    "java/res/xml/search_widget_info.xml",
    "java/res/xml/tracing_preferences.xml",
    "java/res/xml/unified_account_settings_preferences.xml",
@@ -35,21 +36,22 @@ index 12b9d4678386b..f595afd56d517 100644
 +  "java/res/raw/nsfw.js",
  ]
 diff --git a/chrome/android/chrome_java_sources.gni b/chrome/android/chrome_java_sources.gni
-index 6406705f094a1..75868842c9d8e 100644
+index fcffa30f8cd5e..bf279933f1537 100644
 --- a/chrome/android/chrome_java_sources.gni
 +++ b/chrome/android/chrome_java_sources.gni
-@@ -1237,4 +1237,8 @@ chrome_java_sources = [
+@@ -1236,4 +1236,9 @@ chrome_java_sources = [
    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorActivity.java",
    "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorUSBActivity.java",
    "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
 +
 +  "java/src/org/chromium/chrome/browser/yawm/YAWM.java",
 +  "java/src/org/chromium/chrome/browser/yawm/YAWMSupplier.java",
++  "java/src/org/chromium/chrome/browser/yawm/YAWMFactory.java",
 +  "java/src/org/chromium/chrome/browser/yawm/Counter.java",
  ]
 diff --git a/chrome/android/java/res/raw/nsfw.js b/chrome/android/java/res/raw/nsfw.js
 new file mode 100644
-index 0000000000000..ccd4902654798
+index 0000000000000..19b4553877905
 --- /dev/null
 +++ b/chrome/android/java/res/raw/nsfw.js
 @@ -0,0 +1,16245 @@
@@ -5451,7 +5453,7 @@ index 0000000000000..ccd4902654798
 + * limitations under the License.
 + *
 + * =============================================================================
-+ */class a extends r.a{split(t){return new i(this,t)}}class i extends a{constructor(t,e){super(),this.upstream=t,this.impl=new s(t,e)}summary(){return this.impl.summary()}async next(){return this.impl.next()}}class s extends r.b{constructor(t,e){super(),this.upstream=t,this.separator=e,this.carryover=""}summary(){return`${this.upstream.summary()} -> Split('${this.separator}')`}async pump(){const t=await this.upstream.next();if(t.done)return""!==this.carryover&&(this.outputQueue.push(this.carryover),this.carryover="",!0);const e=t.value.split(this.separator);e[0]=this.carryover+e[0];for(const t of e.slice(0,-1))this.outputQueue.push(t);return this.carryover=e[e.length-1],!0}}},function(t,e,n){var r=n(315),a=n(316),i=n(317),s=n(318),o=n(319),u=n(320),c=n(321);c.alea=r,c.xor128=a,c.xorwow=i,c.xorshift7=s,c.xor4096=o,c.tychei=u,t.exports=c},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=n(289),a=n(395),i=n(398),s=n(399),o=n(401);window.counter=counter||new o.NoopCounter,(0,r.load)("https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mobilenet_v2/").then((function(t){var e;e=function(){var e=new i.Model(t,{filterStrictness:80},window.counter),n=new s.PredictionQueue(e);new a.DomObserver(n).watch()},"complete"===document.readyState||"interactive"===document.readyState?e():document.addEventListener("DOMContentLoaded",(function(t){e()}))})).catch((function(t){console.log("failed to load model: ",t)}))},function(t,e,n){"use strict";(function(t){var r=this&&this.__createBinding||(Object.create?function(t,e,n,r){void 0===r&&(r=n),Object.defineProperty(t,r,{enumerable:!0,get:function(){return e[n]}})}:function(t,e,n,r){void 0===r&&(r=n),t[r]=e[n]}),a=this&&this.__setModuleDefault||(Object.create?function(t,e){Object.defineProperty(t,"default",{enumerable:!0,value:e})}:function(t,e){t.default=e}),i=this&&this.__importStar||function(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var n in t)"default"!==n&&Object.prototype.hasOwnProperty.call(t,n)&&r(e,t,n);return a(e,t),e},s=this&&this.__awaiter||function(t,e,n,r){return new(n||(n=Promise))((function(a,i){function s(t){try{u(r.next(t))}catch(t){i(t)}}function o(t){try{u(r.throw(t))}catch(t){i(t)}}function u(t){var e;t.done?a(t.value):(e=t.value,e instanceof n?e:new n((function(t){t(e)}))).then(s,o)}u((r=r.apply(t,e||[])).next())}))},o=this&&this.__generator||function(t,e){var n,r,a,i,s={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]};return i={next:o(0),throw:o(1),return:o(2)},"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function o(i){return function(o){return function(i){if(n)throw new TypeError("Generator is already executing.");for(;s;)try{if(n=1,r&&(a=2&i[0]?r.return:i[0]?r.throw||((a=r.return)&&a.call(r),0):r.next)&&!(a=a.call(r,i[1])).done)return a;switch(r=0,a&&(i=[2&i[0],a.value]),i[0]){case 0:case 1:a=i;break;case 4:return s.label++,{value:i[1],done:!1};case 5:s.label++,r=i[1],i=[0];continue;case 7:i=s.ops.pop(),s.trys.pop();continue;default:if(!(a=s.trys,(a=a.length>0&&a[a.length-1])||6!==i[0]&&2!==i[0])){s=0;continue}if(3===i[0]&&(!a||i[1]>a[0]&&i[1]<a[3])){s.label=i[1];break}if(6===i[0]&&s.label<a[1]){s.label=a[1],a=i;break}if(a&&s.label<a[2]){s.label=a[2],s.ops.push(i);break}a[2]&&s.ops.pop(),s.trys.pop();continue}i=e.call(t,s)}catch(t){i=[6,t],r=0}finally{n=a=0}if(5&i[0])throw i[1];return{value:i[0]?i[1]:void 0,done:!0}}([i,o])}}},u=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(e,"__esModule",{value:!0}),e.NSFWJS=e.load=void 0;var c=i(n(402)),l=n(323),d=u(n(324));e.load=function(t,e){return void 0===t&&(t="https://d1zv2aa70wpiur.cloudfront.net/tfjs_quant_nsfw_mobilenet/"),void 0===e&&(e={size:224}),s(this,void 0,void 0,(function(){var n;return o(this,(function(r){switch(r.label){case 0:if(null==c)throw new Error("Cannot find TensorFlow.js. If you are using a <script> tag, please also include @tensorflow/tfjs on the page before using this model.");return e.size=e.size||224,[4,(n=new h(t,e)).load()];case 1:return r.sent(),[2,n]}}))}))};var h=function(){function e(t,e){this.intermediateModels={},this.options=e,this.normalizationOffset=c.scalar(255),"string"!=typeof t||t.startsWith("indexeddb://")||t.startsWith("localstorage://")?this.pathOrIOHandler=t:this.pathOrIOHandler=t+"model.json"}return e.prototype.load=function(){return s(this,void 0,void 0,(function(){var t,e,n,r,a,i=this;return o(this,(function(s){switch(s.label){case 0:return t=this.options,e=t.size,"graph"!==t.type?[3,2]:(n=this,[4,c.loadGraphModel(this.pathOrIOHandler)]);case 1:return n.model=s.sent(),[3,4];case 2:return r=this,[4,c.loadLayersModel(this.pathOrIOHandler)];case 3:r.model=s.sent(),this.endpoints=this.model.layers.map((function(t){return t.name})),s.label=4;case 4:return[4,(a=c.tidy((function(){return i.model.predict(c.zeros([1,e,e,3]))}))).data()];case 5:return s.sent(),a.dispose(),[2]}}))}))},e.prototype.infer=function(t,e){var n=this;if(null!=e&&-1===this.endpoints.indexOf(e))throw new Error("Unknown endpoint "+e+". Available endpoints: "+this.endpoints+".");return c.tidy((function(){t instanceof c.Tensor||(t=c.browser.fromPixels(t));var r=t.toFloat().div(n.normalizationOffset),a=r,i=n.options.size;if(t.shape[0]!==i||t.shape[1]!==i){a=c.image.resizeBilinear(r,[i,i],!0)}var s,o=a.reshape([1,i,i,3]);if(null==e)s=n.model;else{if(n.model.hasOwnProperty("layers")&&null==n.intermediateModels[e]){var u=n.model.layers.find((function(t){return t.name===e}));n.intermediateModels[e]=c.model({inputs:n.model.inputs,outputs:u.output})}s=n.intermediateModels[e]}return s.predict(o)}))},e.prototype.classify=function(t,e){return void 0===e&&(e=5),s(this,void 0,void 0,(function(){var n,r;return o(this,(function(a){switch(a.label){case 0:return[4,p(n=this.infer(t),e)];case 1:return r=a.sent(),n.dispose(),[2,r]}}))}))},e.prototype.classifyGif=function(e,n){return void 0===n&&(n={topk:5}),s(this,void 0,void 0,(function(){var r,a,i,s,u,c,l,h,p;return o(this,(function(o){switch(o.label){case 0:return r=[],t.isBuffer(e)?[4,d.default({url:e,frames:"all",outputType:"jpg"})]:[3,2];case 1:return r=o.sent(),[3,4];case 2:return[4,d.default({url:e.src,frames:"all",outputType:"canvas"})];case 3:r=o.sent(),o.label=4;case 4:if(a=[],"number"!=typeof n.fps)a=r.map((function(t,e){return e}));else{for(i=0,l=0;l<r.length;l++)i+=10*r[l].frameInfo.delay;if((s=Math.floor(i/1e3*n.fps))<=1)a=[Math.floor(r.length/2)];else if(s>=r.length)a=r.map((function(t,e){return e}));else for(u=Math.floor(r.length/(s+1)),l=1;l<=s;l++)a.push(l*u)}c=[],l=0,o.label=5;case 5:return l<a.length?(h=r[a[l]].getImage(),[4,this.classify(h,n.topk)]):[3,8];case 6:p=o.sent(),"function"==typeof n.onFrame&&n.onFrame({index:a[l],totalFrames:r.length,predictions:p,image:h}),c.push(p),o.label=7;case 7:return l++,[3,5];case 8:return[2,c]}}))}))},e}();function p(t,e){return s(this,void 0,void 0,(function(){var n,r,a,i,s,u;return o(this,(function(o){switch(o.label){case 0:return[4,t.data()];case 1:for(n=o.sent(),r=[],u=0;u<n.length;u++)r.push({value:n[u],index:u});for(r.sort((function(t,e){return e.value-t.value})),a=new Float32Array(e),i=new Int32Array(e),u=0;u<e;u++)a[u]=r[u].value,i[u]=r[u].index;for(s=[],u=0;u<i.length;u++)s.push({className:l.NSFW_CLASSES[i[u]],probability:a[u]});return[2,s]}}))}))}e.NSFWJS=h}).call(this,n(29).Buffer)},function(t,e,n){"use strict";e.byteLength=function(t){var e=c(t),n=e[0],r=e[1];return 3*(n+r)/4-r},e.toByteArray=function(t){var e,n,r=c(t),s=r[0],o=r[1],u=new i(function(t,e,n){return 3*(e+n)/4-n}(0,s,o)),l=0,d=o>0?s-4:s;for(n=0;n<d;n+=4)e=a[t.charCodeAt(n)]<<18|a[t.charCodeAt(n+1)]<<12|a[t.charCodeAt(n+2)]<<6|a[t.charCodeAt(n+3)],u[l++]=e>>16&255,u[l++]=e>>8&255,u[l++]=255&e;2===o&&(e=a[t.charCodeAt(n)]<<2|a[t.charCodeAt(n+1)]>>4,u[l++]=255&e);1===o&&(e=a[t.charCodeAt(n)]<<10|a[t.charCodeAt(n+1)]<<4|a[t.charCodeAt(n+2)]>>2,u[l++]=e>>8&255,u[l++]=255&e);return u},e.fromByteArray=function(t){for(var e,n=t.length,a=n%3,i=[],s=0,o=n-a;s<o;s+=16383)i.push(l(t,s,s+16383>o?o:s+16383));1===a?(e=t[n-1],i.push(r[e>>2]+r[e<<4&63]+"==")):2===a&&(e=(t[n-2]<<8)+t[n-1],i.push(r[e>>10]+r[e>>4&63]+r[e<<2&63]+"="));return i.join("")};for(var r=[],a=[],i="undefined"!=typeof Uint8Array?Uint8Array:Array,s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",o=0,u=s.length;o<u;++o)r[o]=s[o],a[s.charCodeAt(o)]=o;function c(t){var e=t.length;if(e%4>0)throw new Error("Invalid string. Length must be a multiple of 4");var n=t.indexOf("=");return-1===n&&(n=e),[n,n===e?0:4-n%4]}function l(t,e,n){for(var a,i,s=[],o=e;o<n;o+=3)a=(t[o]<<16&16711680)+(t[o+1]<<8&65280)+(255&t[o+2]),s.push(r[(i=a)>>18&63]+r[i>>12&63]+r[i>>6&63]+r[63&i]);return s.join("")}a["-".charCodeAt(0)]=62,a["_".charCodeAt(0)]=63},function(t,e){
++ */class a extends r.a{split(t){return new i(this,t)}}class i extends a{constructor(t,e){super(),this.upstream=t,this.impl=new s(t,e)}summary(){return this.impl.summary()}async next(){return this.impl.next()}}class s extends r.b{constructor(t,e){super(),this.upstream=t,this.separator=e,this.carryover=""}summary(){return`${this.upstream.summary()} -> Split('${this.separator}')`}async pump(){const t=await this.upstream.next();if(t.done)return""!==this.carryover&&(this.outputQueue.push(this.carryover),this.carryover="",!0);const e=t.value.split(this.separator);e[0]=this.carryover+e[0];for(const t of e.slice(0,-1))this.outputQueue.push(t);return this.carryover=e[e.length-1],!0}}},function(t,e,n){var r=n(315),a=n(316),i=n(317),s=n(318),o=n(319),u=n(320),c=n(321);c.alea=r,c.xor128=a,c.xorwow=i,c.xorshift7=s,c.xor4096=o,c.tychei=u,t.exports=c},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=n(289),a=n(395),i=n(398),s=n(399),o=n(401);window.counter=counter||new o.NoopCounter,(0,r.load)("https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mobilenet_v2/").then((function(t){var e;e=function(){var e=new i.Model(t,{filterStrictness:80},window.counter);delete window.counter;var n=new s.PredictionQueue(e);new a.DomObserver(n).watch()},"complete"===document.readyState||"interactive"===document.readyState?e():document.addEventListener("DOMContentLoaded",(function(t){e()}))})).catch((function(t){console.log("failed to load model: ",t)}))},function(t,e,n){"use strict";(function(t){var r=this&&this.__createBinding||(Object.create?function(t,e,n,r){void 0===r&&(r=n),Object.defineProperty(t,r,{enumerable:!0,get:function(){return e[n]}})}:function(t,e,n,r){void 0===r&&(r=n),t[r]=e[n]}),a=this&&this.__setModuleDefault||(Object.create?function(t,e){Object.defineProperty(t,"default",{enumerable:!0,value:e})}:function(t,e){t.default=e}),i=this&&this.__importStar||function(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var n in t)"default"!==n&&Object.prototype.hasOwnProperty.call(t,n)&&r(e,t,n);return a(e,t),e},s=this&&this.__awaiter||function(t,e,n,r){return new(n||(n=Promise))((function(a,i){function s(t){try{u(r.next(t))}catch(t){i(t)}}function o(t){try{u(r.throw(t))}catch(t){i(t)}}function u(t){var e;t.done?a(t.value):(e=t.value,e instanceof n?e:new n((function(t){t(e)}))).then(s,o)}u((r=r.apply(t,e||[])).next())}))},o=this&&this.__generator||function(t,e){var n,r,a,i,s={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]};return i={next:o(0),throw:o(1),return:o(2)},"function"==typeof Symbol&&(i[Symbol.iterator]=function(){return this}),i;function o(i){return function(o){return function(i){if(n)throw new TypeError("Generator is already executing.");for(;s;)try{if(n=1,r&&(a=2&i[0]?r.return:i[0]?r.throw||((a=r.return)&&a.call(r),0):r.next)&&!(a=a.call(r,i[1])).done)return a;switch(r=0,a&&(i=[2&i[0],a.value]),i[0]){case 0:case 1:a=i;break;case 4:return s.label++,{value:i[1],done:!1};case 5:s.label++,r=i[1],i=[0];continue;case 7:i=s.ops.pop(),s.trys.pop();continue;default:if(!(a=s.trys,(a=a.length>0&&a[a.length-1])||6!==i[0]&&2!==i[0])){s=0;continue}if(3===i[0]&&(!a||i[1]>a[0]&&i[1]<a[3])){s.label=i[1];break}if(6===i[0]&&s.label<a[1]){s.label=a[1],a=i;break}if(a&&s.label<a[2]){s.label=a[2],s.ops.push(i);break}a[2]&&s.ops.pop(),s.trys.pop();continue}i=e.call(t,s)}catch(t){i=[6,t],r=0}finally{n=a=0}if(5&i[0])throw i[1];return{value:i[0]?i[1]:void 0,done:!0}}([i,o])}}},u=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(e,"__esModule",{value:!0}),e.NSFWJS=e.load=void 0;var c=i(n(402)),l=n(323),d=u(n(324));e.load=function(t,e){return void 0===t&&(t="https://d1zv2aa70wpiur.cloudfront.net/tfjs_quant_nsfw_mobilenet/"),void 0===e&&(e={size:224}),s(this,void 0,void 0,(function(){var n;return o(this,(function(r){switch(r.label){case 0:if(null==c)throw new Error("Cannot find TensorFlow.js. If you are using a <script> tag, please also include @tensorflow/tfjs on the page before using this model.");return e.size=e.size||224,[4,(n=new h(t,e)).load()];case 1:return r.sent(),[2,n]}}))}))};var h=function(){function e(t,e){this.intermediateModels={},this.options=e,this.normalizationOffset=c.scalar(255),"string"!=typeof t||t.startsWith("indexeddb://")||t.startsWith("localstorage://")?this.pathOrIOHandler=t:this.pathOrIOHandler=t+"model.json"}return e.prototype.load=function(){return s(this,void 0,void 0,(function(){var t,e,n,r,a,i=this;return o(this,(function(s){switch(s.label){case 0:return t=this.options,e=t.size,"graph"!==t.type?[3,2]:(n=this,[4,c.loadGraphModel(this.pathOrIOHandler)]);case 1:return n.model=s.sent(),[3,4];case 2:return r=this,[4,c.loadLayersModel(this.pathOrIOHandler)];case 3:r.model=s.sent(),this.endpoints=this.model.layers.map((function(t){return t.name})),s.label=4;case 4:return[4,(a=c.tidy((function(){return i.model.predict(c.zeros([1,e,e,3]))}))).data()];case 5:return s.sent(),a.dispose(),[2]}}))}))},e.prototype.infer=function(t,e){var n=this;if(null!=e&&-1===this.endpoints.indexOf(e))throw new Error("Unknown endpoint "+e+". Available endpoints: "+this.endpoints+".");return c.tidy((function(){t instanceof c.Tensor||(t=c.browser.fromPixels(t));var r=t.toFloat().div(n.normalizationOffset),a=r,i=n.options.size;if(t.shape[0]!==i||t.shape[1]!==i){a=c.image.resizeBilinear(r,[i,i],!0)}var s,o=a.reshape([1,i,i,3]);if(null==e)s=n.model;else{if(n.model.hasOwnProperty("layers")&&null==n.intermediateModels[e]){var u=n.model.layers.find((function(t){return t.name===e}));n.intermediateModels[e]=c.model({inputs:n.model.inputs,outputs:u.output})}s=n.intermediateModels[e]}return s.predict(o)}))},e.prototype.classify=function(t,e){return void 0===e&&(e=5),s(this,void 0,void 0,(function(){var n,r;return o(this,(function(a){switch(a.label){case 0:return[4,p(n=this.infer(t),e)];case 1:return r=a.sent(),n.dispose(),[2,r]}}))}))},e.prototype.classifyGif=function(e,n){return void 0===n&&(n={topk:5}),s(this,void 0,void 0,(function(){var r,a,i,s,u,c,l,h,p;return o(this,(function(o){switch(o.label){case 0:return r=[],t.isBuffer(e)?[4,d.default({url:e,frames:"all",outputType:"jpg"})]:[3,2];case 1:return r=o.sent(),[3,4];case 2:return[4,d.default({url:e.src,frames:"all",outputType:"canvas"})];case 3:r=o.sent(),o.label=4;case 4:if(a=[],"number"!=typeof n.fps)a=r.map((function(t,e){return e}));else{for(i=0,l=0;l<r.length;l++)i+=10*r[l].frameInfo.delay;if((s=Math.floor(i/1e3*n.fps))<=1)a=[Math.floor(r.length/2)];else if(s>=r.length)a=r.map((function(t,e){return e}));else for(u=Math.floor(r.length/(s+1)),l=1;l<=s;l++)a.push(l*u)}c=[],l=0,o.label=5;case 5:return l<a.length?(h=r[a[l]].getImage(),[4,this.classify(h,n.topk)]):[3,8];case 6:p=o.sent(),"function"==typeof n.onFrame&&n.onFrame({index:a[l],totalFrames:r.length,predictions:p,image:h}),c.push(p),o.label=7;case 7:return l++,[3,5];case 8:return[2,c]}}))}))},e}();function p(t,e){return s(this,void 0,void 0,(function(){var n,r,a,i,s,u;return o(this,(function(o){switch(o.label){case 0:return[4,t.data()];case 1:for(n=o.sent(),r=[],u=0;u<n.length;u++)r.push({value:n[u],index:u});for(r.sort((function(t,e){return e.value-t.value})),a=new Float32Array(e),i=new Int32Array(e),u=0;u<e;u++)a[u]=r[u].value,i[u]=r[u].index;for(s=[],u=0;u<i.length;u++)s.push({className:l.NSFW_CLASSES[i[u]],probability:a[u]});return[2,s]}}))}))}e.NSFWJS=h}).call(this,n(29).Buffer)},function(t,e,n){"use strict";e.byteLength=function(t){var e=c(t),n=e[0],r=e[1];return 3*(n+r)/4-r},e.toByteArray=function(t){var e,n,r=c(t),s=r[0],o=r[1],u=new i(function(t,e,n){return 3*(e+n)/4-n}(0,s,o)),l=0,d=o>0?s-4:s;for(n=0;n<d;n+=4)e=a[t.charCodeAt(n)]<<18|a[t.charCodeAt(n+1)]<<12|a[t.charCodeAt(n+2)]<<6|a[t.charCodeAt(n+3)],u[l++]=e>>16&255,u[l++]=e>>8&255,u[l++]=255&e;2===o&&(e=a[t.charCodeAt(n)]<<2|a[t.charCodeAt(n+1)]>>4,u[l++]=255&e);1===o&&(e=a[t.charCodeAt(n)]<<10|a[t.charCodeAt(n+1)]<<4|a[t.charCodeAt(n+2)]>>2,u[l++]=e>>8&255,u[l++]=255&e);return u},e.fromByteArray=function(t){for(var e,n=t.length,a=n%3,i=[],s=0,o=n-a;s<o;s+=16383)i.push(l(t,s,s+16383>o?o:s+16383));1===a?(e=t[n-1],i.push(r[e>>2]+r[e<<4&63]+"==")):2===a&&(e=(t[n-2]<<8)+t[n-1],i.push(r[e>>10]+r[e>>4&63]+r[e<<2&63]+"="));return i.join("")};for(var r=[],a=[],i="undefined"!=typeof Uint8Array?Uint8Array:Array,s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",o=0,u=s.length;o<u;++o)r[o]=s[o],a[s.charCodeAt(o)]=o;function c(t){var e=t.length;if(e%4>0)throw new Error("Invalid string. Length must be a multiple of 4");var n=t.indexOf("=");return-1===n&&(n=e),[n,n===e?0:4-n%4]}function l(t,e,n){for(var a,i,s=[],o=e;o<n;o+=3)a=(t[o]<<16&16711680)+(t[o+1]<<8&65280)+(255&t[o+2]),s.push(r[(i=a)>>18&63]+r[i>>12&63]+r[i>>6&63]+r[63&i]);return s.join("")}a["-".charCodeAt(0)]=62,a["_".charCodeAt(0)]=63},function(t,e){
 +/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 +e.read=function(t,e,n,r,a){var i,s,o=8*a-r-1,u=(1<<o)-1,c=u>>1,l=-7,d=n?a-1:0,h=n?-1:1,p=t[e+d];for(d+=h,i=p&(1<<-l)-1,p>>=-l,l+=o;l>0;i=256*i+t[e+d],d+=h,l-=8);for(s=i&(1<<-l)-1,i>>=-l,l+=r;l>0;s=256*s+t[e+d],d+=h,l-=8);if(0===i)i=1-c;else{if(i===u)return s?NaN:1/0*(p?-1:1);s+=Math.pow(2,r),i-=c}return(p?-1:1)*s*Math.pow(2,i-r)},e.write=function(t,e,n,r,a,i){var s,o,u,c=8*i-a-1,l=(1<<c)-1,d=l>>1,h=23===a?Math.pow(2,-24)-Math.pow(2,-77):0,p=r?0:i-1,f=r?1:-1,m=e<0||0===e&&1/e<0?1:0;for(e=Math.abs(e),isNaN(e)||e===1/0?(o=isNaN(e)?1:0,s=l):(s=Math.floor(Math.log(e)/Math.LN2),e*(u=Math.pow(2,-s))<1&&(s--,u*=2),(e+=s+d>=1?h/u:h*Math.pow(2,1-d))*u>=2&&(s++,u/=2),s+d>=l?(o=0,s=l):s+d>=1?(o=(e*u-1)*Math.pow(2,a),s+=d):(o=e*Math.pow(2,d-1)*Math.pow(2,a),s=0));a>=8;t[n+p]=255&o,p+=f,o/=256,a-=8);for(s=s<<a|o,c+=a;c>0;t[n+p]=255&s,p+=f,s/=256,c-=8);t[n+p-f]|=128*m}},function(t,e,n){"use strict";(function(t){var e=n(19);
 +/**
@@ -16315,60 +16317,69 @@ index 362150badb8d4..a9fbdb6fa3da9 100644
      <PreferenceCategory
          android:key="security_section"
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java
-index 7dab55890fb0f..914a33e635094 100644
+index 0aff9e9327741..4cbdbb0184b58 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java
-@@ -251,6 +251,9 @@ import org.chromium.webapk.lib.client.WebApkNavigationClient;
+@@ -251,6 +251,10 @@ import org.chromium.webapk.lib.client.WebApkNavigationClient;
  import java.util.ArrayList;
  import java.util.List;
  
 +import org.chromium.chrome.browser.yawm.YAWM;
 +import org.chromium.chrome.browser.yawm.YAWMSupplier;
++import org.chromium.chrome.browser.yawm.YAWMFactory;
 +
  /**
   * A {@link AsyncInitializationActivity} that builds and manages a {@link CompositorViewHolder}
   * and associated classes.
-@@ -299,6 +302,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
+@@ -299,6 +303,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
  
      private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
              new ManualFillingComponentSupplier();
-+
-+    private final UnownedUserDataSupplier<YAWM> mYawm = new YAWMSupplier();
++    
++    private final UnownedUserDataSupplier<YAWM> mYawmSupplier = new YAWMSupplier();
 +    
      // TODO(crbug.com/1209864): Move ownership to RootUiCoordinator.
      private final UnownedUserDataSupplier<BrowserControlsManager> mBrowserControlsManagerSupplier =
              new BrowserControlsManagerSupplier();
-@@ -415,6 +421,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
+@@ -415,6 +422,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
  
      protected ChromeActivity() {
          mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
-+        mYawm.set(new YAWM());
++        mYawmSupplier.set(YAWMFactory.createComponent());
          sNextActivityId++;
          mActivityId = sNextActivityId;
          mUmaActivityObserver = new UmaActivityObserver(this);
-@@ -1650,6 +1657,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
+@@ -576,6 +584,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
+         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+         mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+         mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
++        mYawmSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+         mInsetObserverViewSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+         mBrowserControlsManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+         // BrowserControlsManager is ready immediately.
+@@ -1668,6 +1677,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
          }
          mManualFillingComponentSupplier.destroy();
  
-+        if (mYawm.hasValue()){
-+            mYawm.get().destroy();
++        if (mYawmSupplier.hasValue()){
++            mYawmSupplier.get().destroy();
 +        }
-+        mYawm.destroy();
++        mYawmSupplier.destroy();
 +
          if (mBrowserControlsManagerSupplier.hasValue()) {
              mBrowserControlsManagerSupplier.get().destroy();
          }
-@@ -1841,6 +1853,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
+@@ -1878,6 +1892,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                          mEdgeToEdgeControllerSupplier,
                          findViewById(R.id.keyboard_accessory_sheet_stub),
                          findViewById(R.id.keyboard_accessory_stub));
 +        
-+        mYawm.get().initialize(getWindowAndroid());
++        mYawmSupplier.get().initialize(getWindowAndroid());
+     }
  
-         mTabReparentingControllerSupplier.set(
-                 new TabReparentingController(
+     private boolean maybeOnScreenSizeChange() {
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java b/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java
-index 1c26a9f482f07..951c460f9b1a0 100644
+index 88c5241c0c93c..e938cd7aa2cec 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java
 @@ -61,6 +61,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
@@ -16379,7 +16390,7 @@ index 1c26a9f482f07..951c460f9b1a0 100644
      private static final String PREF_SECURE_DNS = "secure_dns";
      private static final String PREF_USAGE_STATS = "usage_stats_reporting";
      private static final String PREF_DO_NOT_TRACK = "do_not_track";
-@@ -226,6 +227,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
+@@ -227,6 +228,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
              clearBrowsingDataAdvancedPreference.setVisible(true);
          }
  
@@ -16392,76 +16403,94 @@ index 1c26a9f482f07..951c460f9b1a0 100644
          updatePreferences();
      }
  
-@@ -272,6 +279,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
+@@ -273,6 +280,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
          } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
              UserPrefs.get(getProfile())
                      .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
 +        } else if (PREF_NSFW_FILTER_ENABLED.equals(key)) {
-+           UserPrefs.get(getProfile())
-+                    .setBoolean(PREF_NSFW_FILTER_ENABLED, (boolean) newValue); 
++            UserPrefs.get(getProfile())
++                .setBoolean(PREF_NSFW_FILTER_ENABLED, (boolean) newValue);
          }
          return true;
      }
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/yawm/Counter.java b/chrome/android/java/src/org/chromium/chrome/browser/yawm/Counter.java
 new file mode 100644
-index 0000000000000..39e42dd9dcc9f
+index 0000000000000..1c10addf1ab67
 --- /dev/null
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/yawm/Counter.java
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,40 @@
 +package org.chromium.chrome.browser.yawm;
 +
-+import org.chromium.base.Log;
++import android.content.Context;
 +import android.webkit.JavascriptInterface;
++import android.content.SharedPreferences;
++import org.chromium.base.ContextUtils;
++import org.chromium.base.Log;
 +import org.jni_zero.CalledByNative;
 +
 +public class Counter {
++    private static final String TAG = "YAWMPlugins";
++    private static final String YAWM_VALUES_FILES =
++        "org.yawm.io.YAWMValues";
++    private static final String COUNTER_KEY = 
++        "COUNTER_KEY";
++    private final SharedPreferences sharedPreferences;
++
++    private static SharedPreferences getYAWMValuePreferences() {
++        return ContextUtils.getApplicationContext()
++                .getSharedPreferences(YAWM_VALUES_FILES, Context.MODE_PRIVATE);
++    }    
++
++    public Counter(){
++        sharedPreferences = getYAWMValuePreferences();
++    }
++
 +    @JavascriptInterface
 +    @CalledByNative
 +    public void addCount() {
-+        Log.i("YAWMPlugins", "addCount");
++        try {
++            long count = sharedPreferences.getLong(COUNTER_KEY, 0) + 1;
++            Log.i(TAG, "addCount: %d", count);
++            SharedPreferences.Editor editor = sharedPreferences.edit();
++            editor.putLong(COUNTER_KEY, count);
++            editor.apply();
++        } catch(Exception e){
++            Log.e(TAG, "addCount exception: %s", e.toString());
++        }
 +    }
 +}
+\ No newline at end of file
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWM.java b/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWM.java
 new file mode 100644
-index 0000000000000..13dc9d0e84cd4
+index 0000000000000..9a271540832b0
 --- /dev/null
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWM.java
-@@ -0,0 +1,118 @@
+@@ -0,0 +1,114 @@
 +package org.chromium.chrome.browser.yawm;
 +
 +import androidx.annotation.Nullable;
-+
++import android.webkit.JavascriptInterface;
++import android.content.res.Resources;
++import org.chromium.base.ContextUtils;
 +import org.chromium.chrome.browser.tab.TabCreationState;
 +import org.chromium.chrome.browser.tab.TabLaunchType;
-+
-+import org.chromium.content_public.browser.JavaScriptCallback;
++import org.chromium.content_public.browser.JavascriptInjector;
 +import org.chromium.content_public.browser.NavigationHandle;
 +import org.chromium.content_public.browser.WebContents;
-+import org.chromium.content_public.browser.JavascriptInjector;
 +import org.chromium.chrome.browser.tab.Tab;
 +import org.chromium.chrome.browser.app.ChromeActivity;
 +import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-+import android.webkit.JavascriptInterface;
 +import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 +import org.chromium.chrome.browser.tab.TabObserver;
 +import org.chromium.ui.base.WindowAndroid;
 +import org.chromium.base.Log;
-+
-+import java.lang.annotation.Annotation;
-+import java.lang.reflect.Method;
-+
 +import org.chromium.url.GURL;
-+import org.chromium.base.ThreadUtils;
-+import java.util.HashSet;
-+import android.content.res.Resources;
-+import java.io.InputStream;
 +import org.chromium.chrome.R;
-+import javax.swing.table.TableModel;
-+
 +import org.chromium.chrome.browser.tabmodel.TabModel;
-+import org.chromium.components.embedder_support.util.UrlUtilities;
 +import org.chromium.chrome.browser.tab.EmptyTabObserver;
-+
++import java.io.InputStream;
++import java.lang.annotation.Annotation;
++import java.util.HashSet;
 +
 +public class YAWM {
 +    private static final String TAG = "YAWMPlugins";
@@ -16471,25 +16500,37 @@ index 0000000000000..13dc9d0e84cd4
 +    private TabModelSelectorTabModelObserver mTabModelObserver;
 +    private final HashSet<Tab> mObservedTabs = new HashSet<>();
 +    
-+    Counter mCounter = new Counter();
++    private Counter mCounter;
 +    private final TabObserver mTabObserver = new EmptyTabObserver(){
 +        @Override
-+        public void onPageLoadFinished(Tab tab, GURL url) {
-+            if (UrlUtilities.isNtpUrl(tab.getUrl())){
-+                return;
-+            }
++        public void onDidFinishNavigationInPrimaryMainFrame(
++            Tab tab, NavigationHandle navigation) {
 +            Log.i(TAG, "onDidFinishNavigationInPrimaryMainFrame, url: %s", tab.getUrl());
 +            tab.getWebContents().evaluateJavaScript(SCRIPT, null);
 +        }
 +    };
++
++    /**
++     * Shorthand to get the activity tab.
++     * @return The currently visible {@link Tab}, if any.
++     */
++    private @Nullable Tab getActiveBrowserTab() {
++        return mActivity.getActivityTabProvider().get();
++    }
 +    
 +    public void initialize(WindowAndroid windowAndroid) {
 +        mActivity = (ChromeActivity) windowAndroid.getActivity().get();
 +        assert mActivity != null;
-+        this.readScript(mActivity);       
++        this.readScript();
++        mCounter = new Counter();
 +        
 +        mTabModelObserver =
 +            new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()){
++                @Override
++                public void didSelectTab(Tab tab, int type, int lastId) {
++                    ensureObserverRegistered(tab);
++                }
++
 +                @Override
 +                public void didAddTab(
 +                    Tab tab,
@@ -16506,22 +16547,15 @@ index 0000000000000..13dc9d0e84cd4
 +                    JavascriptInjector.fromWebContents(tab.getWebContents(), false).
 +                        removeInterface("counter");
 +                }
-+
-+                @Override
-+                public void restoreCompleted() {
-+                    for (int i = 0; i < mActivity.getTabModelSelector().getTotalTabCount(); i++){
-+                        Tab tab = mActivity.getTabModelSelector().getTabById(i);
-+                        ensureObserverRegistered(tab);
-+                    }
-+                }
 +            };
++        ensureObserverRegistered(getActiveBrowserTab());
 +    }
 +
 +    public YAWM(){}
 +
-+    private void readScript(ChromeActivity mActivity){
++    private void readScript(){
 +        try {
-+            InputStream in_s = mActivity.getResources().openRawResource(R.raw.nsfw);
++            InputStream in_s = ContextUtils.getApplicationContext().getResources().openRawResource(R.raw.nsfw);
 +            byte[] b = new byte[in_s.available()];
 +            in_s.read(b);
 +            this.SCRIPT = new String(b);
@@ -16534,6 +16568,7 @@ index 0000000000000..13dc9d0e84cd4
 +        mActivity = null;
 +        for (Tab tab : mObservedTabs) tab.removeObserver(mTabObserver);
 +        mObservedTabs.clear();
++        mCounter = null;
 +    }
 +
 +    private void ensureObserverRegistered(@Nullable Tab tab) {
@@ -16544,6 +16579,27 @@ index 0000000000000..13dc9d0e84cd4
 +        tab.addObserver(mTabObserver);
 +    }
 +
++}
+\ No newline at end of file
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMFactory.java b/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMFactory.java
+new file mode 100644
+index 0000000000000..a22e00474cfed
+--- /dev/null
++++ b/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMFactory.java
+@@ -0,0 +1,14 @@
++package org.chromium.chrome.browser.yawm;
++
++/** Use {@link #createComponent()} to instantiate a {@link YAWM}. */
++public class YAWMFactory {
++    private YAWMFactory() {}
++
++    /**
++     * Creates a {@link YAWM}.
++     * @return A {@link YAWM}.
++     */
++    public static YAWM createComponent() {
++        return new YAWM();
++    }
 +}
 \ No newline at end of file
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMSupplier.java b/chrome/android/java/src/org/chromium/chrome/browser/yawm/YAWMSupplier.java
@@ -16586,37 +16642,37 @@ index 0000000000000..24c78dc132b26
 +}
 \ No newline at end of file
 diff --git a/chrome/browser/profiles/profile_impl.cc b/chrome/browser/profiles/profile_impl.cc
-index 98bfbc0f96140..85b74a9f0f8f6 100644
+index 47ada6bf53225..542e5c3b87d89 100644
 --- a/chrome/browser/profiles/profile_impl.cc
 +++ b/chrome/browser/profiles/profile_impl.cc
-@@ -435,6 +435,8 @@ void ProfileImpl::RegisterProfilePrefs(
- #endif
+@@ -432,6 +432,8 @@ void ProfileImpl::RegisterProfilePrefs(
    registry->RegisterStringPref(prefs::kCustomProfileLabel, std::string());
    registry->RegisterIntegerPref(prefs::kProfileLabelPreset, 0);
+   registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);
 +
 +  registry->RegisterBooleanPref(prefs::kNSFWFilterEnabled, false);
  }
  
  ProfileImpl::ProfileImpl(
 diff --git a/chrome/common/pref_names.h b/chrome/common/pref_names.h
-index e12455dbd4701..8c149bf683b04 100644
+index 9c55ef295449e..3a60d3f5b460f 100644
 --- a/chrome/common/pref_names.h
 +++ b/chrome/common/pref_names.h
-@@ -4061,6 +4061,9 @@ inline constexpr char kCustomProfileLabel[] = "profile.label.custom_value";
+@@ -4103,6 +4103,9 @@ inline constexpr char kCustomProfileLabel[] = "profile.label.custom_value";
  // IntegerValue of the custom label preset of a managed profile.
  inline constexpr char kProfileLabelPreset[] = "profile.label.preset";
  
 +// NSFW Extension enabled
 +inline constexpr char kNSFWFilterEnabled[] = "nsfw_filter_enabled";
 +
- }  // namespace prefs
- 
- #endif  // CHROME_COMMON_PREF_NAMES_H_
+ #if BUILDFLAG(IS_ANDROID)
+ // An integer count of how many account-level breached credentials were detected
+ // by GMSCore.
 diff --git a/content/browser/web_contents/web_contents_android.cc b/content/browser/web_contents/web_contents_android.cc
-index 1157dae7c7bbc..872d0087230ab 100644
+index c5f6bedd5860e..63de54f090011 100644
 --- a/content/browser/web_contents/web_contents_android.cc
 +++ b/content/browser/web_contents/web_contents_android.cc
-@@ -586,6 +586,8 @@ void WebContentsAndroid::EvaluateJavaScript(
+@@ -591,6 +591,8 @@ void WebContentsAndroid::EvaluateJavaScript(
  
    if (!InitializeRenderFrameForJavaScript())
      return;
@@ -16626,5 +16682,5 @@ index 1157dae7c7bbc..872d0087230ab 100644
    if (!callback) {
      // No callback requested.
 -- 
-2.25.1
+2.34.1
 
