@@ -1,6 +1,6 @@
 From: uazo <uazo@users.noreply.github.com>
 Date: Thu, 29 Sep 2022 11:27:35 +0000
-Subject: Eyeo Adblock for Bromite
+Subject: Eyeo Adblock for Cromite
 
 Change the normal behaviour of Eyeo Chromium SDK to
 suit Bromite logic.
@@ -51,16 +51,16 @@ deactivation of all pop-ups (default disabled)
  .../settings/AdblockSettingsFragment.java     |   50 +-
  components/adblock/content/browser/BUILD.gn   |   18 +-
  .../adblock_controller_factory_base.cc        |    5 +-
- .../browser/adblock_url_loader_factory.cc     |   22 +-
+ .../browser/adblock_url_loader_factory.cc     |   63 +-
  .../browser/adblock_url_loader_factory.h      |    7 +-
  .../browser/adblock_webcontents_observer.cc   |   25 +-
  .../browser/adblock_webcontents_observer.h    |    5 +-
  .../content_security_policy_injector_impl.cc  |    1 +
  .../content/browser/element_hider_impl.cc     |    2 +-
  .../browser/frame_hierarchy_builder.cc        |    3 +-
- .../browser/resource_classification_runner.h  |    8 +
- .../resource_classification_runner_impl.cc    |   30 +-
- .../resource_classification_runner_impl.h     |    8 +
+ .../browser/resource_classification_runner.h  |    9 +
+ .../resource_classification_runner_impl.cc    |   83 +-
+ .../resource_classification_runner_impl.h     |   10 +
  .../subscription_service_factory_base.cc      |   11 +-
  .../subscription_service_factory_base.h       |    1 +
  components/adblock/core/BUILD.gn              |   39 -
@@ -130,7 +130,7 @@ deactivation of all pop-ups (default disabled)
  .../blink/renderer/core/css/style_engine.h    |    1 +
  .../renderer/core/exported/web_document.cc    |   15 +-
  .../definitions/adblock_private.d.ts          |   14 +
- 120 files changed, 9214 insertions(+), 1271 deletions(-)
+ 120 files changed, 9293 insertions(+), 1289 deletions(-)
  create mode 100644 chrome/browser/resources/settings/adblock_page/adblock_page.html
  create mode 100644 chrome/browser/resources/settings/adblock_page/adblock_page.ts
  rename components/adblock/android/java/res/xml/{adblock_preferences.xml => eyeo_adblock_preferences.xml} (56%)
@@ -1055,7 +1055,7 @@ diff --git a/chrome/browser/resources/settings/BUILD.gn b/chrome/browser/resourc
      "appearance_page/appearance_fonts_page.ts",
      "appearance_page/appearance_page.ts",
      "appearance_page/home_url_input.ts",
-@@ -399,6 +400,7 @@ build_webui("build") {
+@@ -398,6 +399,7 @@ build_webui("build") {
    ts_definitions = [
      "//tools/typescript/definitions/autofill_private.d.ts",
      "//tools/typescript/definitions/chrome_event.d.ts",
@@ -2626,7 +2626,31 @@ diff --git a/components/adblock/content/browser/adblock_url_loader_factory.cc b/
      case network::mojom::RequestDestination::kWebIdentity:
        return ContentType::Other;
    }
-@@ -344,12 +345,6 @@ void AdblockURLLoaderFactory::InProgressRequest::OnRequestError(
+@@ -186,8 +187,13 @@ class AdblockURLLoaderFactory::InProgressRequest
+   void OnRequestError(int error_code);
+   void CheckFilterMatch(CheckFilterMatchCallback callback);
+   void ProcessResponseHeaders(
++      const std::vector<std::string>& dns_aliases,
+       const scoped_refptr<net::HttpResponseHeaders>& headers,
+       ProcessResponseHeadersCallback callback);
++  void OnProcessResponseHeaders2(
++      const scoped_refptr<net::HttpResponseHeaders>& headers,
++      ProcessResponseHeadersCallback callback,
++      FilterMatchResult result);
+   void CheckRewriteFilterMatch(CheckRewriteFilterMatchCallback callback);
+   void OnRequestUrlClassified(CheckFilterMatchCallback callback,
+                               FilterMatchResult result);
+@@ -307,7 +313,9 @@ void AdblockURLLoaderFactory::InProgressRequest::OnReceiveResponse(
+   VLOG(1) << "[eyeo] Sending headers for processing: " << request_url_;
+   client_receiver_.Pause();
+   const scoped_refptr<net::HttpResponseHeaders>& headers = head->headers;
++  auto dns_aliases = head->dns_aliases;
+   ProcessResponseHeaders(
++      std::move(dns_aliases),
+       headers, base::BindOnce(&InProgressRequest::OnProcessHeadersResult,
+                               weak_factory_.GetWeakPtr(), std::move(head),
+                               std::move(body), std::move(cached_metadata)));
+@@ -344,12 +352,6 @@ void AdblockURLLoaderFactory::InProgressRequest::OnRequestError(
  
  void AdblockURLLoaderFactory::InProgressRequest::CheckFilterMatch(
      CheckFilterMatchCallback callback) {
@@ -2639,16 +2663,65 @@ diff --git a/components/adblock/content/browser/adblock_url_loader_factory.cc b/
    auto subscription_service = factory_->config_.subscription_service;
    if (is_document_request_) {
      auto* host = content::RenderFrameHost::FromID(factory_->host_id_);
-@@ -388,7 +383,7 @@ void AdblockURLLoaderFactory::InProgressRequest::CheckFilterMatch(
+@@ -386,9 +388,10 @@ void AdblockURLLoaderFactory::InProgressRequest::CheckFilterMatch(
+                                   FilterMatchResult::kNoRule);
+     }
    } else {
++    std::vector<std::string> dns_aliases;
      factory_->config_.resource_classifier->CheckRequestFilterMatch(
-         subscription_service->GetCurrentSnapshot(), request_url_,
+-        subscription_service->GetCurrentSnapshot(), request_url_,
 -        adblock_resource_type_, factory_->host_id_,
++        subscription_service->GetCurrentSnapshot(), request_url_, std::move(dns_aliases),
 +        factory_->request_initiator_, adblock_resource_type_, factory_->host_id_,
          base::BindOnce(
              &AdblockURLLoaderFactory::InProgressRequest::OnRequestUrlClassified,
              weak_factory_.GetWeakPtr(),
-@@ -677,12 +672,13 @@ void AdblockURLLoaderFactory::InProgressRequest::OnRequestFilterMatchResult(
+@@ -399,6 +402,7 @@ void AdblockURLLoaderFactory::InProgressRequest::CheckFilterMatch(
+ }
+ 
+ void AdblockURLLoaderFactory::InProgressRequest::ProcessResponseHeaders(
++    const std::vector<std::string>& dns_aliases,
+     const scoped_refptr<net::HttpResponseHeaders>& headers,
+     ProcessResponseHeadersCallback callback) {
+   if (!factory_->CheckHostValid()) {
+@@ -407,6 +411,36 @@ void AdblockURLLoaderFactory::InProgressRequest::ProcessResponseHeaders(
+     return;
+   }
+ 
++  auto subscription_service = factory_->config_.subscription_service;
++  if (dns_aliases.size() > 1) {
++    factory_->config_.resource_classifier->CheckRequestFilterMatch(
++        subscription_service->GetCurrentSnapshot(), request_url_, std::move(dns_aliases),
++        factory_->request_initiator_, adblock_resource_type_, factory_->host_id_,
++        base::BindOnce(
++            &AdblockURLLoaderFactory::InProgressRequest::OnProcessResponseHeaders2,
++            weak_factory_.GetWeakPtr(), headers, std::move(callback)));
++    return;
++  }
++  factory_->config_.resource_classifier->CheckResponseFilterMatch(
++      subscription_service->GetCurrentSnapshot(), request_url_,
++      adblock_resource_type_, factory_->host_id_, headers,
++      base::BindOnce(
++          &AdblockURLLoaderFactory::InProgressRequest::
++              OnResponseHeadersClassified,
++          weak_factory_.GetWeakPtr(), headers,
++          base::BindOnce(&AdblockURLLoaderFactory::InProgressRequest::
++                             PostResponseHeadersCallbackToUI,
++                         weak_factory_.GetWeakPtr(), std::move(callback))));
++}
++
++void AdblockURLLoaderFactory::InProgressRequest::OnProcessResponseHeaders2(
++    const scoped_refptr<net::HttpResponseHeaders>& headers,
++    ProcessResponseHeadersCallback callback,
++    FilterMatchResult result) {
++  if (result == FilterMatchResult::kBlockRule) {
++    PostResponseHeadersCallbackToUI(std::move(callback), result, nullptr);
++    return;
++  }
+   auto subscription_service = factory_->config_.subscription_service;
+   factory_->config_.resource_classifier->CheckResponseFilterMatch(
+       subscription_service->GetCurrentSnapshot(), request_url_,
+@@ -677,12 +711,13 @@ void AdblockURLLoaderFactory::InProgressRequest::OnRequestFilterMatchResult(
  
  AdblockURLLoaderFactory::AdblockURLLoaderFactory(
      AdblockURLLoaderFactoryConfig config,
@@ -2664,7 +2737,7 @@ diff --git a/components/adblock/content/browser/adblock_url_loader_factory.cc b/
        host_id_(host_id),
        user_agent_string_(std::move(user_agent_string)),
        on_disconnect_(std::move(on_disconnect)) {
-@@ -691,10 +687,12 @@ AdblockURLLoaderFactory::AdblockURLLoaderFactory(
+@@ -691,10 +726,12 @@ AdblockURLLoaderFactory::AdblockURLLoaderFactory(
    DCHECK(config_.element_hider);
    DCHECK(config_.sitekey_storage);
    DCHECK(config_.csp_injector);
@@ -2844,10 +2917,11 @@ diff --git a/components/adblock/content/browser/frame_hierarchy_builder.cc b/com
 diff --git a/components/adblock/content/browser/resource_classification_runner.h b/components/adblock/content/browser/resource_classification_runner.h
 --- a/components/adblock/content/browser/resource_classification_runner.h
 +++ b/components/adblock/content/browser/resource_classification_runner.h
-@@ -81,12 +81,20 @@ class ResourceClassificationRunner : public KeyedService {
+@@ -81,12 +81,21 @@ class ResourceClassificationRunner : public KeyedService {
    virtual void CheckRequestFilterMatch(
        SubscriptionService::Snapshot subscription_collections,
        const GURL& request_url,
++      const std::vector<std::string>& dns_aliases,
 +      const GURL& request_initiator,
        ContentType adblock_resource_type,
        content::GlobalRenderFrameHostId render_frame_host_id,
@@ -2868,7 +2942,7 @@ diff --git a/components/adblock/content/browser/resource_classification_runner.h
 diff --git a/components/adblock/content/browser/resource_classification_runner_impl.cc b/components/adblock/content/browser/resource_classification_runner_impl.cc
 --- a/components/adblock/content/browser/resource_classification_runner_impl.cc
 +++ b/components/adblock/content/browser/resource_classification_runner_impl.cc
-@@ -169,15 +169,28 @@ void ResourceClassificationRunnerImpl::CheckPopupFilterMatch(
+@@ -169,15 +169,30 @@ void ResourceClassificationRunnerImpl::CheckPopupFilterMatch(
  void ResourceClassificationRunnerImpl::CheckRequestFilterMatchForWebSocket(
      SubscriptionService::Snapshot subscription_collections,
      const GURL& request_url,
@@ -2878,7 +2952,8 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
    DCHECK(request_url.SchemeIsWSOrWSS());
 -  CheckRequestFilterMatch(std::move(subscription_collections), request_url,
-+  CheckRequestFilterMatch(std::move(subscription_collections), request_url, request_initiator,
++  std::vector<std::string> dns_aliases;
++  CheckRequestFilterMatch(std::move(subscription_collections), request_url, std::move(dns_aliases), request_initiator,
                            ContentType::Websocket, render_frame_host_id,
                            std::move(callback));
  }
@@ -2890,7 +2965,8 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
 +    content::GlobalRenderFrameHostId render_frame_host_id,
 +    CheckFilterMatchCallback callback) {
 +  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-+  CheckRequestFilterMatch(std::move(subscription_collections), request_url, request_initiator,
++  std::vector<std::string> dns_aliases;
++  CheckRequestFilterMatch(std::move(subscription_collections), request_url, std::move(dns_aliases), request_initiator,
 +                          ContentType::Other, render_frame_host_id,
 +                          std::move(callback));
 +}
@@ -2898,15 +2974,16 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
  void ResourceClassificationRunnerImpl::CheckDocumentAllowlisted(
      SubscriptionService::Snapshot subscription_collections,
      const GURL& request_url,
-@@ -212,6 +225,7 @@ void ResourceClassificationRunnerImpl::ProcessDocumentAllowlistedResponse(
+@@ -212,6 +227,8 @@ void ResourceClassificationRunnerImpl::ProcessDocumentAllowlistedResponse(
  void ResourceClassificationRunnerImpl::CheckRequestFilterMatch(
      SubscriptionService::Snapshot subscription_collections,
      const GURL& request_url,
++    const std::vector<std::string>& dns_aliases,
 +    const GURL& request_initiator,
      ContentType adblock_resource_type,
      content::GlobalRenderFrameHostId frame_host_id,
      CheckFilterMatchCallback callback) {
-@@ -220,14 +234,10 @@ void ResourceClassificationRunnerImpl::CheckRequestFilterMatch(
+@@ -220,14 +237,10 @@ void ResourceClassificationRunnerImpl::CheckRequestFilterMatch(
    DVLOG(1) << "[eyeo] CheckRequestFilterMatchImpl for " << request_url.spec();
  
    auto* host = content::RenderFrameHost::FromID(frame_host_id);
@@ -2924,18 +3001,81 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
  
    DVLOG(1) << "[eyeo] Got " << frame_hierarchy_chain.size()
             << " frame_hierarchy for " << request_url.spec();
-@@ -275,7 +285,8 @@ ResourceClassificationRunnerImpl::CheckRequestFilterMatchInternal(
-       adblock_resource_type, sitekey);
+@@ -246,7 +259,7 @@ void ResourceClassificationRunnerImpl::CheckRequestFilterMatch(
+       base::BindOnce(
+           &ResourceClassificationRunnerImpl::CheckRequestFilterMatchInternal,
+           resource_classifier_, std::move(subscription_collections),
+-          request_url, frame_hierarchy_chain, adblock_resource_type,
++          request_url, std::move(dns_aliases), frame_hierarchy_chain, adblock_resource_type,
+           std::move(site_key)),
+       base::BindOnce(
+           &ResourceClassificationRunnerImpl::OnCheckResourceFilterMatchComplete,
+@@ -260,9 +273,18 @@ ResourceClassificationRunnerImpl::CheckRequestFilterMatchInternal(
+     const scoped_refptr<ResourceClassifier>& resource_classifier,
+     SubscriptionService::Snapshot subscription_collections,
+     const GURL request_url,
++    const std::vector<std::string>& dns_aliases,
+     const std::vector<GURL> frame_hierarchy,
+     ContentType adblock_resource_type,
+     const SiteKey sitekey) {
++  std::vector<std::string> aliases;
++  if (dns_aliases.size() <= 1) {
++    aliases.push_back(request_url.host());
++  } else {
++    for (const std::string& alias : dns_aliases)
++      aliases.push_back(alias);
++  }
++
+   TRACE_EVENT1("eyeo",
+                "ResourceClassificationRunnerImpl::"
+                "CheckRequestFilterMatchInternal",
+@@ -270,26 +292,35 @@ ResourceClassificationRunnerImpl::CheckRequestFilterMatchInternal(
  
-   if (classification_result.decision == ClassificationDecision::Allowed) {
+   DVLOG(1) << "[eyeo] CheckRequestFilterMatchInternal start";
+ 
+-  auto classification_result = resource_classifier->ClassifyRequest(
+-      std::move(subscription_collections), request_url, frame_hierarchy,
+-      adblock_resource_type, sitekey);
+-
+-  if (classification_result.decision == ClassificationDecision::Allowed) {
 -    VLOG(1) << "[eyeo] Document allowed due to allowing filter " << request_url;
-+    VLOG(1) << "[eyeo] Document allowed due to allowing filter " << request_url
-+            << " " << classification_result.decisive_subscription.spec();
-     return CheckResourceFilterMatchResult{
-         FilterMatchResult::kAllowRule,
-         classification_result.decisive_subscription,
-@@ -290,6 +301,7 @@ ResourceClassificationRunnerImpl::CheckRequestFilterMatchInternal(
-         classification_result.decisive_configuration_name};
+-    return CheckResourceFilterMatchResult{
+-        FilterMatchResult::kAllowRule,
+-        classification_result.decisive_subscription,
+-        classification_result.decisive_configuration_name};
+-  }
++  GURL alias_url = request_url;
++  for (const std::string& alias : aliases) {
++    GURL::Replacements replace_host;
++    replace_host.SetHostStr(alias);
++    alias_url = request_url.ReplaceComponents(replace_host);
++
++    auto classification_result = resource_classifier->ClassifyRequest(
++        std::move(subscription_collections), alias_url, frame_hierarchy,
++        adblock_resource_type, sitekey);
++
++    if (classification_result.decision == ClassificationDecision::Allowed) {
++      VLOG(1) << "[eyeo] Document allowed due to allowing filter " << alias_url
++              << " " << classification_result.decisive_subscription.spec();
++      return CheckResourceFilterMatchResult{
++          FilterMatchResult::kAllowRule,
++          classification_result.decisive_subscription,
++          classification_result.decisive_configuration_name};
++    }
+ 
+-  if (classification_result.decision == ClassificationDecision::Blocked) {
+-    VLOG(1) << "[eyeo] Document blocked " << request_url;
+-    return CheckResourceFilterMatchResult{
+-        FilterMatchResult::kBlockRule,
+-        classification_result.decisive_subscription,
+-        classification_result.decisive_configuration_name};
++    if (classification_result.decision == ClassificationDecision::Blocked) {
++      VLOG(1) << "[eyeo] Document blocked " << alias_url;
++      return CheckResourceFilterMatchResult{
++          FilterMatchResult::kBlockRule,
++          classification_result.decisive_subscription,
++          classification_result.decisive_configuration_name};
++    }
    }
  
 +  VLOG(1) << "[eyeo] No Rule for " << request_url;
@@ -2945,10 +3085,11 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
 diff --git a/components/adblock/content/browser/resource_classification_runner_impl.h b/components/adblock/content/browser/resource_classification_runner_impl.h
 --- a/components/adblock/content/browser/resource_classification_runner_impl.h
 +++ b/components/adblock/content/browser/resource_classification_runner_impl.h
-@@ -55,12 +55,14 @@ class ResourceClassificationRunnerImpl final
+@@ -55,12 +55,15 @@ class ResourceClassificationRunnerImpl final
    void CheckRequestFilterMatch(
        SubscriptionService::Snapshot subscription_collections,
        const GURL& request_url,
++      const std::vector<std::string>& dns_aliases,
 +      const GURL& request_initiator,
        ContentType adblock_resource_type,
        content::GlobalRenderFrameHostId render_frame_host_id,
@@ -2960,7 +3101,7 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
        content::GlobalRenderFrameHostId render_frame_host_id,
        CheckFilterMatchCallback callback) final;
    // No callback, just notify observers
-@@ -68,6 +70,12 @@ class ResourceClassificationRunnerImpl final
+@@ -68,6 +71,12 @@ class ResourceClassificationRunnerImpl final
        SubscriptionService::Snapshot subscription_collections,
        const GURL& request_url,
        content::GlobalRenderFrameHostId render_frame_host_id) final;
@@ -2973,6 +3114,14 @@ diff --git a/components/adblock/content/browser/resource_classification_runner_i
    void CheckResponseFilterMatch(
        SubscriptionService::Snapshot subscription_collections,
        const GURL& response_url,
+@@ -92,6 +101,7 @@ class ResourceClassificationRunnerImpl final
+       const scoped_refptr<ResourceClassifier>& resource_classifier,
+       SubscriptionService::Snapshot subscription_collections,
+       const GURL request_url,
++      const std::vector<std::string>& dns_aliases,
+       const std::vector<GURL> frame_hierarchy,
+       ContentType adblock_resource_type,
+       const SiteKey sitekey);
 diff --git a/components/adblock/content/browser/subscription_service_factory_base.cc b/components/adblock/content/browser/subscription_service_factory_base.cc
 --- a/components/adblock/content/browser/subscription_service_factory_base.cc
 +++ b/components/adblock/content/browser/subscription_service_factory_base.cc
