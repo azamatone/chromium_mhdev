@@ -18,10 +18,10 @@ function domReady(cb: Function): void {
 let _counter = typeof(counter) == 'undefined' ? new NoopCounter() : counter;
 loadModel('https://raw.githubusercontent.com/elb3k/nsfw-chromium/main/models/mobilenet_v2/').then(nsfwModel => {
     domReady(()=>{
-        // @ts-ignore
-        let model = new Model(nsfwModel, {filterStrictness: 80}, _counter);
+        let model = new Model(nsfwModel, {filterStrictness: 80});
         let queue = new Queue(model);
-        let observer = new DomObserver(queue);
+        // @ts-ignore
+        let observer = new DomObserver(queue, _counter);
         observer.watch();
     })
 }).catch((error) => {

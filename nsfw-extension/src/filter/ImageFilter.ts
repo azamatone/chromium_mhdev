@@ -1,12 +1,15 @@
+import { ICounter } from "../counter/Counter"
 import { PredictionQueue as Queue } from "../queue/queue"
 
 export class ImageFilter {
     private readonly MIN_IMAGE_SIZE: number
     private readonly queue: Queue
+    private readonly counter: ICounter
 
-    constructor(queue: Queue) {
+    constructor(queue: Queue, counter: ICounter) {
         this.MIN_IMAGE_SIZE = 41
         this.queue = queue
+        this.counter = counter
     }
     
     public analyzeImage(image: HTMLImageElement, srcAttribute: boolean): void {
@@ -35,14 +38,15 @@ export class ImageFilter {
         this.queue.predict(image, (result: boolean) => {
             image.style.transform = ""
             if (result){
+                this.counter.addImageCount()
                 image.style.filter = 'blur(25px)'
             } else {
                 image.style.filter = ""
             }
             image.crossOrigin = ""
         }, (error)=>{
-            image.style.filter = "grayscale(1)"
-            image.crossOrigin = ""
+            // image.style.filter = "grayscale(1)"
+            // image.crossOrigin = ""
         })
     }
 }

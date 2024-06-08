@@ -1,5 +1,4 @@
 import { NSFWJS, predictionType } from 'nsfwjs'
-import { ICounter } from '../counter/Counter'
 
 export type ModelSettings = {
   filterStrictness: number
@@ -12,16 +11,14 @@ type IModel = {
 
 export class Model implements IModel {
   private readonly model: NSFWJS
-  private readonly counter: ICounter
 
   private readonly FILTER_LIST: Set<string>
   private readonly firstFilterPercentages: Map<string, number>
   private readonly secondFilterPercentages: Map<string, number>
 
 
-  constructor (model: NSFWJS, settings: ModelSettings, counter: ICounter) {
+  constructor (model: NSFWJS, settings: ModelSettings) {
     this.model = model
-    this.counter = counter
 
     this.FILTER_LIST = new Set(['Hentai', 'Porn', 'Sexy'])
 
@@ -69,13 +66,11 @@ export class Model implements IModel {
 
     const result1 = this.FILTER_LIST.has(cn1) && pb1 > (this.firstFilterPercentages.get(cn1) as number)
     if (result1) {
-      this.counter.addCount()
       return ({ result: result1, className: cn1, probability: pb1 })
     }
 
     const result2 = this.FILTER_LIST.has(cn2) && pb2 > (this.secondFilterPercentages.get(cn2) as number)
     if (result2) {
-      this.counter.addCount()
       return ({ result: result2, className: cn2, probability: pb2 })
     }
 

@@ -1,12 +1,15 @@
+import { ICounter } from "../counter/Counter"
 import { PredictionQueue as Queue } from "../queue/queue"
 
 export class VideoFilter {
     private readonly MIN_IMAGE_SIZE: number
     private readonly queue: Queue
+    private readonly counter: ICounter
 
-    constructor(queue: Queue) {
+    constructor(queue: Queue, counter: ICounter) {
         this.MIN_IMAGE_SIZE = 41
         this.queue = queue
+        this.counter = counter
     }
 
     public analyzeVideo(video: HTMLVideoElement, ): void {
@@ -45,6 +48,7 @@ export class VideoFilter {
             this.queue.predict(img, (result: boolean) => {
               if(result){
                   this._blurVideo(video);
+                  this.counter.addVideoDuration(1.0);
               } else {
                   this._unblurVideo(video);
               }
