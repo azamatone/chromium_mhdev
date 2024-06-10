@@ -1,7 +1,9 @@
 export type ICounter = {
-    addCount: () => void
+    addImageCount: () => void
+    addVideoDuration: (duration: number) => void
 }
 
 export class NoopCounter implements ICounter{
-    public addCount(){}
+    public addImageCount(){}
+    public addVideoDuration(duration: number){}
 } 

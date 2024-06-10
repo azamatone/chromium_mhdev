@@ -1,6 +1,7 @@
 import { ImageFilter } from "../filter/ImageFilter"
 import { VideoFilter } from "../filter/VideoFilter"
 import { PredictionQueue as Queue } from "../queue/queue"
+import { ICounter } from "../counter/Counter"
 
 export class DomObserver {
     private readonly observer: MutationObserver
@@ -9,9 +10,9 @@ export class DomObserver {
 
     private running: boolean;
 
-    constructor(queue: Queue){
-        this.imageFilter = new ImageFilter(queue)
-        this.videoFilter = new VideoFilter(queue)
+    constructor(queue: Queue, counter: ICounter){
+        this.imageFilter = new ImageFilter(queue, counter)
+        this.videoFilter = new VideoFilter(queue, counter)
         this.observer = new MutationObserver(this.callback.bind(this))
         this.running = false;
     }
