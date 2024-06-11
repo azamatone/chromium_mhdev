@@ -247,7 +247,6 @@ Compress-libchrome-to-free-up-some-space.patch
 Cromite-Branding.patch
 Disable-Feeback-Collector.patch
 Disable-remote-altsvc-for-h3-connections.patch
-do-not-block-build-incompatible-profiles.patch
 Allow-DocumentPiP-if-PopupsAndRedirects-are-active.patch
 allow-the-download-of-clang-for-windows-crossbuild.patch
 Add-option-to-disable-snapshots.patch
@@ -274,7 +273,6 @@ Chrome-web-store-protection.patch
 Enable-search-engine-settings-desktop-ui.patch
 Disable-Android-AppRestrictions.patch
 Customize-selection-popup.patch
-Enables-deactivation-of-the-js-debugger-statement.patch
 Enable-gwp-asan-on-Android.patch
 Disable-Read-Aloud-by-default.patch
 Disable-Compose-feature.patch
@@ -307,3 +305,10 @@ eyeo-beta-118.0.5993.48-android_api.patch
 eyeo-beta-118.0.5993.48-android_settings.patch
 eyeo-beta-118.0.5993.48-extension_api.patch
 Eyeo-Adblock-Remove-Privacy-Issues.patch
+
+YAWM-Port-NSFW-filtering-and-Cromite-Adblocker.patch
+YAWM-Increase-the-video-processing-frequency.patch
+YAWM-Enable-WEBGL-in-site-setttings-by-default.patch
+YAWM-Fix-NSFW-Youtube-filtering-bug.patch
+YAWM-Connect-NSFW-filter-to-profile-preferences.patch
+YAWM-Add-NSFW-filtering-report.patch
