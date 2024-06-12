@@ -1,0 +1,418 @@
+From e70b52c65f35223da7751c0c64468edd14d8d0d7 Mon Sep 17 00:00:00 2001
+From: Yawm SDK <azureuser@yawm-2-vm.sienciuyguvrf.cloudapp.net>
+Date: Wed, 12 Jun 2024 12:14:12 +0000
+Subject: [YAWM] Disable user scripts support
+
+---
+ .../android/java/res/xml/main_preferences.xml |  4 +-
+ .../browser/download/DownloadUtils.java       | 12 +--
+ .../init/ProcessInitializationHandler.java    |  4 +-
+ chrome/browser/prefs/browser_prefs.cc         |  8 +-
+ ...hrome_browser_main_extra_parts_profiles.cc | 12 +--
+ chrome/browser/profiles/profile_manager.cc    | 20 ++---
+ chrome/browser/profiles/renderer_updater.cc   | 27 +++----
+ chrome/browser/profiles/renderer_updater.h    |  6 +-
+ .../webui/chrome_web_ui_controller_factory.cc |  8 +-
+ .../chrome_content_renderer_client.cc         | 74 +++++++++----------
+ .../renderer/chrome_render_thread_observer.cc |  8 +-
+ 11 files changed, 89 insertions(+), 94 deletions(-)
+
+diff --git a/chrome/android/java/res/xml/main_preferences.xml b/chrome/android/java/res/xml/main_preferences.xml
+index 23ba67581cd59..45980ecd004f8 100644
+--- a/chrome/android/java/res/xml/main_preferences.xml
++++ b/chrome/android/java/res/xml/main_preferences.xml
+@@ -126,11 +126,11 @@
+         android:key="useragent_settings"
+         android:order="20"
+         android:title="@string/prefs_useragent_settings"/>
+-    <Preference
++    <!-- <Preference
+         android:fragment="org.chromium.components.user_scripts.UserScriptsPreferences"
+         android:key="userscripts_settings"
+         android:order="20"
+-        android:title="@string/prefs_userscripts_settings"/>
++        android:title="@string/prefs_userscripts_settings"/> -->
+     <Preference
+         android:fragment="org.chromium.chrome.browser.language.settings.LanguageSettings"
+         android:key="languages"
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java b/chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java
+index 754f8b6d45410..464ea10fe85ac 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java
+@@ -75,7 +75,7 @@ import org.chromium.ui.base.DeviceFormFactor;
+ import org.chromium.ui.base.MimeTypeUtils;
+ import org.chromium.ui.widget.Toast;
+ import org.chromium.url.GURL;
+-import org.chromium.chrome.browser.user_scripts.UserScriptsUtils;
++// import org.chromium.chrome.browser.user_scripts.UserScriptsUtils;
+ 
+ import java.io.File;
+ 
+@@ -404,11 +404,11 @@ public class DownloadUtils {
+             String referrer,
+             @DownloadOpenSource int source,
+             Context context) {
+-        if (UserScriptsUtils.getInstance().openFile(filePath, mimeType, downloadGuid,
+-                                                    originalUrl, referrer,
+-                                                    getUriForItem(filePath))) {
+-            return true;
+-        }
++        // if (UserScriptsUtils.getInstance().openFile(filePath, mimeType, downloadGuid,
++        // originalUrl, referrer,
++        // getUriForItem(filePath))) {
++        // return true;
++        // }
+         DownloadMetrics.recordDownloadOpen(source, mimeType);
+         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
+ 
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java b/chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java
+index eec532a10cbec..37881e28137f8 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java
+@@ -121,7 +121,7 @@ import java.util.ArrayList;
+ import java.util.Date;
+ import java.util.List;
+ 
+-import org.chromium.chrome.browser.user_scripts.UserScriptsUtils;
++// import org.chromium.chrome.browser.user_scripts.UserScriptsUtils;
+ 
+ /**
+  * Handles the initialization dependences of the browser process.  This is meant to handle the
+@@ -351,7 +351,7 @@ public class ProcessInitializationHandler {
+ 
+                         DefaultBrowserInfo.initBrowserFetcher();
+ 
+-                        UserScriptsUtils.Initialize();
++                        // UserScriptsUtils.Initialize();
+ 
+                         AfterStartupTaskUtils.setStartupComplete();
+ 
+diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
+index 70fd3a29ab28e..851042e438d60 100644
+--- a/chrome/browser/prefs/browser_prefs.cc
++++ b/chrome/browser/prefs/browser_prefs.cc
+@@ -267,7 +267,7 @@
+ #include "components/permissions/contexts/geolocation_permission_context_android.h"
+ #include "components/query_tiles/tile_service_prefs.h"
+ #include "components/webapps/browser/android/install_prompt_prefs.h"
+-#include "components/user_scripts/browser/user_script_prefs.h"
++// #include "components/user_scripts/browser/user_script_prefs.h"
+ #else  // BUILDFLAG(IS_ANDROID)
+ #include "chrome/browser/cart/cart_service.h"
+ #include "chrome/browser/companion/core/promo_handler.h"
+@@ -1882,9 +1882,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+   translate::TranslatePrefs::RegisterProfilePrefs(registry);
+   omnibox::RegisterProfilePrefs(registry);
+   ZeroSuggestProvider::RegisterProfilePrefs(registry);
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsPrefs::RegisterProfilePrefs(registry);
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   user_scripts::UserScriptsPrefs::RegisterProfilePrefs(registry);
++  // #endif
+ 
+ #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+   promos_utils::RegisterProfilePrefs(registry);
+diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
+index e4b24f668d92d..283534ad1ecdf 100644
+--- a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
++++ b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
+@@ -537,9 +537,9 @@
+ #include "chrome/browser/enterprise/data_controls/rules_service.h"
+ #endif
+ 
+-#if BUILDFLAG(IS_ANDROID)
+-#include "components/user_scripts/browser/userscripts_browser_client.h"
+-#endif
++// #if BUILDFLAG(IS_ANDROID)
++// #include "components/user_scripts/browser/userscripts_browser_client.h"
++// #endif
+ 
+ namespace chrome {
+ 
+@@ -1315,9 +1315,9 @@ void ChromeBrowserMainExtraPartsProfiles::
+ #if !BUILDFLAG(IS_ANDROID)
+   WebUIContentsPreloadManager::EnsureFactoryBuilt();
+ #endif
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsBrowserClient::GetInstance();
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   user_scripts::UserScriptsBrowserClient::GetInstance();
++  // #endif
+ }
+ 
+ void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {
+diff --git a/chrome/browser/profiles/profile_manager.cc b/chrome/browser/profiles/profile_manager.cc
+index daa88a191caa8..d94330948fdfc 100644
+--- a/chrome/browser/profiles/profile_manager.cc
++++ b/chrome/browser/profiles/profile_manager.cc
+@@ -116,9 +116,9 @@
+ #include "extensions/common/manifest.h"
+ #endif
+ 
+-#if BUILDFLAG(IS_ANDROID)
+-#include "components/user_scripts/browser/userscripts_browser_client.h"
+-#endif
++// #if BUILDFLAG(IS_ANDROID)
++// #include "components/user_scripts/browser/userscripts_browser_client.h"
++// #endif
+ 
+ #if BUILDFLAG(ENABLE_SESSION_SERVICE)
+ #include "chrome/browser/sessions/app_session_service_factory.h"
+@@ -1530,13 +1530,13 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
+   // initializing the supervised flag if necessary).
+   ChildAccountServiceFactory::GetForProfile(profile)->Init();
+   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsBrowserClient* userscript_client =
+-    user_scripts::UserScriptsBrowserClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->SetProfile(profile);
+-  }
+-#endif
++// #if BUILDFLAG(IS_ANDROID)
++//   user_scripts::UserScriptsBrowserClient* userscript_client =
++//     user_scripts::UserScriptsBrowserClient::GetInstance();
++//   if (userscript_client) {
++//     userscript_client->SetProfile(profile);
++//   }
++// #endif
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   // After the ManagementPolicy has been set, update it for the Supervised User
+   // Extension Delegate, which has been created before the profile
+diff --git a/chrome/browser/profiles/renderer_updater.cc b/chrome/browser/profiles/renderer_updater.cc
+index 0e08f1f83533e..2016cc9f1a14f 100644
+--- a/chrome/browser/profiles/renderer_updater.cc
++++ b/chrome/browser/profiles/renderer_updater.cc
+@@ -75,9 +75,10 @@ RendererUpdater::RendererUpdater(Profile* profile)
+   force_youtube_restrict_.Init(policy::policy_prefs::kForceYouTubeRestrict,
+                                pref_service);
+   allowed_domains_for_apps_.Init(prefs::kAllowedDomainsForApps, pref_service);
+-#if BUILDFLAG(IS_ANDROID)
+-  activate_userscripts_.Init(user_scripts::prefs::kUserScriptsEnabled, pref_service);
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   activate_userscripts_.Init(user_scripts::prefs::kUserScriptsEnabled,
++  //   pref_service);
++  // #endif
+ 
+   pref_change_registrar_.Init(pref_service);
+   pref_change_registrar_.Add(
+@@ -92,12 +93,12 @@ RendererUpdater::RendererUpdater(Profile* profile)
+       prefs::kAllowedDomainsForApps,
+       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
+                           base::Unretained(this)));
+-#if BUILDFLAG(IS_ANDROID)
+-  pref_change_registrar_.Add(
+-      user_scripts::prefs::kUserScriptsEnabled,
+-      base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
+-                          base::Unretained(this)));
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   pref_change_registrar_.Add(
++  //       user_scripts::prefs::kUserScriptsEnabled,
++  //       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
++  //                           base::Unretained(this)));
++  // #endif
+ }
+ 
+ RendererUpdater::~RendererUpdater() {
+@@ -241,11 +242,5 @@ chrome::mojom::DynamicParamsPtr RendererUpdater::CreateRendererDynamicParams()
+       GetBoundSessionThrottlerParams(),
+ #endif
+       force_google_safesearch_.GetValue(), force_youtube_restrict_.GetValue(),
+-      allowed_domains_for_apps_.GetValue(),
+-#if BUILDFLAG(IS_ANDROID)
+-      activate_userscripts_.GetValue()
+-#else
+-      false
+-#endif
+-  );
++      allowed_domains_for_apps_.GetValue(), false);
+ }
+diff --git a/chrome/browser/profiles/renderer_updater.h b/chrome/browser/profiles/renderer_updater.h
+index 3bc2e1bf7c298..cbe9413424321 100644
+--- a/chrome/browser/profiles/renderer_updater.h
++++ b/chrome/browser/profiles/renderer_updater.h
+@@ -102,9 +102,9 @@ class RendererUpdater : public KeyedService
+ 
+   // Prefs that we sync to the renderers.
+   BooleanPrefMember force_google_safesearch_;
+-#if BUILDFLAG(IS_ANDROID)
+-  BooleanPrefMember activate_userscripts_;
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   BooleanPrefMember activate_userscripts_;
++  // #endif
+   IntegerPrefMember force_youtube_restrict_;
+   StringPrefMember allowed_domains_for_apps_;
+ };
+diff --git a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
+index 6770ce5866015..a6cf52f81acf2 100644
+--- a/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
++++ b/chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc
+@@ -504,10 +504,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
+   }
+   if (url.host_piece() == chrome::kChromeUIVersionHost)
+     return &NewWebUI<VersionUI>;
+-#if BUILDFLAG(IS_ANDROID)
+-  if (url.host_piece() == user_scripts::kChromeUIUserScriptsHost)
+-    return &NewWebUI<user_scripts::UserScriptsUI>;
+-#endif
++    // #if BUILDFLAG(IS_ANDROID)
++    //   if (url.host_piece() == user_scripts::kChromeUIUserScriptsHost)
++    //     return &NewWebUI<user_scripts::UserScriptsUI>;
++    // #endif
+ 
+ #if !BUILDFLAG(IS_ANDROID)
+ #if !BUILDFLAG(IS_CHROMEOS)
+diff --git a/chrome/renderer/chrome_content_renderer_client.cc b/chrome/renderer/chrome_content_renderer_client.cc
+index 46188d8fcc01a..c461d82db1516 100644
+--- a/chrome/renderer/chrome_content_renderer_client.cc
++++ b/chrome/renderer/chrome_content_renderer_client.cc
+@@ -261,10 +261,10 @@
+ #include "chrome/renderer/cco/multiline_detector.h"
+ #endif
+ 
+-#if BUILDFLAG(IS_ANDROID)
+-#include "components/user_scripts/common/user_scripts_features.h"
+-#include "components/user_scripts/renderer/user_scripts_renderer_client.h"
+-#endif
++// #if BUILDFLAG(IS_ANDROID)
++// #include "components/user_scripts/common/user_scripts_features.h"
++// #include "components/user_scripts/renderer/user_scripts_renderer_client.h"
++// #endif
+ 
+ using autofill::AutofillAgent;
+ using autofill::PasswordAutofillAgent;
+@@ -462,13 +462,13 @@ void ChromeContentRendererClient::RenderThreadStarted() {
+       WebString::FromASCII(extensions::kExtensionScheme));
+ #endif
+ 
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsRendererClient* userscript_client =
+-    user_scripts::UserScriptsRendererClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->RenderThreadStarted(GetChromeObserver());
+-  }
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   user_scripts::UserScriptsRendererClient* userscript_client =
++  //     user_scripts::UserScriptsRendererClient::GetInstance();
++  //   if (userscript_client) {
++  //     userscript_client->RenderThreadStarted(GetChromeObserver());
++  //   }
++  // #endif
+ 
+ #if BUILDFLAG(ENABLE_SPELLCHECK)
+   if (!spellcheck_)
+@@ -629,14 +629,14 @@ void ChromeContentRendererClient::RenderFrameCreated(
+       render_frame, registry);
+ #endif
+ 
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsRendererClient* userscript_client =
+-    user_scripts::UserScriptsRendererClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->RenderFrameCreated(
+-      render_frame, registry);
+-  }
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   user_scripts::UserScriptsRendererClient* userscript_client =
++  //     user_scripts::UserScriptsRendererClient::GetInstance();
++  //   if (userscript_client) {
++  //     userscript_client->RenderFrameCreated(
++  //       render_frame, registry);
++  //   }
++  // #endif
+ 
+ #if BUILDFLAG(ENABLE_PPAPI)
+   new PepperHelper(render_frame);
+@@ -1662,12 +1662,12 @@ void ChromeContentRendererClient::RunScriptsAtDocumentStart(
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   static_assert(false, "Compiler error: extensions cannot be enabled with user scripts");
+ #endif
+-  user_scripts::UserScriptsRendererClient* userscript_client =
+-    user_scripts::UserScriptsRendererClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->RunScriptsAtDocumentStart(
+-      render_frame);
+-  }
++  // user_scripts::UserScriptsRendererClient* userscript_client =
++  //   user_scripts::UserScriptsRendererClient::GetInstance();
++  // if (userscript_client) {
++  //   userscript_client->RunScriptsAtDocumentStart(
++  //     render_frame);
++  // }
+ #endif
+ }
+ 
+@@ -1682,12 +1682,12 @@ void ChromeContentRendererClient::RunScriptsAtDocumentEnd(
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   static_assert(false, "Compiler error: extensions cannot be enabled with user scripts");
+ #endif
+-  user_scripts::UserScriptsRendererClient* userscript_client =
+-    user_scripts::UserScriptsRendererClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->RunScriptsAtDocumentEnd(
+-      render_frame);
+-  }
++  // user_scripts::UserScriptsRendererClient* userscript_client =
++  //   user_scripts::UserScriptsRendererClient::GetInstance();
++  // if (userscript_client) {
++  //   userscript_client->RunScriptsAtDocumentEnd(
++  //     render_frame);
++  // }
+ #endif
+ }
+ 
+@@ -1702,12 +1702,12 @@ void ChromeContentRendererClient::RunScriptsAtDocumentIdle(
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   static_assert(false, "Compiler error: extensions cannot be enabled with user scripts");
+ #endif
+-  user_scripts::UserScriptsRendererClient* userscript_client =
+-    user_scripts::UserScriptsRendererClient::GetInstance();
+-  if (userscript_client) {
+-    userscript_client->RunScriptsAtDocumentIdle(
+-      render_frame);
+-  }
++  // user_scripts::UserScriptsRendererClient* userscript_client =
++  //   user_scripts::UserScriptsRendererClient::GetInstance();
++  // if (userscript_client) {
++  //   userscript_client->RunScriptsAtDocumentIdle(
++  //     render_frame);
++  // }
+ #endif
+ }
+ 
+diff --git a/chrome/renderer/chrome_render_thread_observer.cc b/chrome/renderer/chrome_render_thread_observer.cc
+index 160081c691039..c02a17851caf1 100644
+--- a/chrome/renderer/chrome_render_thread_observer.cc
++++ b/chrome/renderer/chrome_render_thread_observer.cc
+@@ -56,7 +56,7 @@
+ #include "third_party/blink/public/web/web_security_policy.h"
+ #include "third_party/blink/public/web/web_view.h"
+ 
+-#include "components/user_scripts/renderer/user_scripts_renderer_client.h"
++// #include "components/user_scripts/renderer/user_scripts_renderer_client.h"
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+ #include "chrome/renderer/ash_merge_session_loader_throttle.h"
+@@ -226,9 +226,9 @@ void ChromeRenderThreadObserver::SetConfiguration(
+     chrome::mojom::DynamicParamsPtr params) {
+   base::AutoLock lock(dynamic_params_lock_);
+   dynamic_params_ = std::move(params);
+-#if BUILDFLAG(IS_ANDROID)
+-  user_scripts::UserScriptsRendererClient::GetInstance()->ConfigurationUpdated();
+-#endif
++  // #if BUILDFLAG(IS_ANDROID)
++  //   user_scripts::UserScriptsRendererClient::GetInstance()->ConfigurationUpdated();
++  // #endif
+ }
+ 
+ void ChromeRenderThreadObserver::ConfigureIdentifiabilityStudy(
+-- 
+2.34.1
+

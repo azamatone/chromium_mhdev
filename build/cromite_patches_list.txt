@@ -313,3 +313,4 @@ YAWM-Fix-NSFW-Youtube-filtering-bug.patch
 YAWM-Connect-NSFW-filter-to-profile-preferences.patch
 YAWM-Add-NSFW-filtering-report.patch
 YAWM-Remove-menu-item-to-view-source.patch
+YAWM-Disable-user-scripts-support.patch
