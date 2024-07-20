@@ -1,0 +1,88 @@
+From d4cf1d6619a47b6dd04b3dceabeb05daa58cc151 Mon Sep 17 00:00:00 2001
+From: Elbek Rocky <elbek@rocky.local>
+Date: Fri, 19 Jul 2024 21:20:20 -0400
+Subject: [PATCH] privacy enhancements
+
+---
+ chrome/common/google_url_loader_throttle.cc   | 30 ++++++++++++-------
+ .../tracking_protection_prefs.cc              |  2 +-
+ .../core/common/safe_browsing_prefs.cc        |  2 +-
+ 3 files changed, 22 insertions(+), 12 deletions(-)
+
+diff --git a/chrome/common/google_url_loader_throttle.cc b/chrome/common/google_url_loader_throttle.cc
+index 499595662d960..48d88a7501cad 100644
+--- a/chrome/common/google_url_loader_throttle.cc
++++ b/chrome/common/google_url_loader_throttle.cc
+@@ -148,12 +148,19 @@ void GoogleURLLoaderThrottle::DetachFromCurrentSequence() {}
+ void GoogleURLLoaderThrottle::WillStartRequest(
+     network::ResourceRequest* request,
+     bool* defer) {
+-  if (dynamic_params_->force_safe_search) {
+-    GURL new_url;
+-    safe_search_api::ForceGoogleSafeSearch(request->url, &new_url);
+-    if (!new_url.is_empty()) {
+-      request->url = new_url;
+-    }
++  // if (dynamic_params_->force_safe_search) {
++  //   GURL new_url;
++  //   safe_search_api::ForceGoogleSafeSearch(request->url, &new_url);
++  //   if (!new_url.is_empty()) {
++  //     request->url = new_url;
++  //   }
++  // }
++
++  // Force safe search
++  GURL new_url;
++  safe_search_api::ForceGoogleSafeSearch(request->url, &new_url);
++  if (!new_url.is_empty()) {
++    request->url = new_url;
+   }
+ 
+   static_assert(safe_search_api::YOUTUBE_RESTRICT_OFF == 0,
+@@ -220,10 +227,13 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
+   // URLLoaderThrottles can only change the redirect URL when the network
+   // service is enabled. The non-network service path handles this in
+   // ChromeNetworkDelegate.
+-  if (dynamic_params_->force_safe_search) {
+-    safe_search_api::ForceGoogleSafeSearch(redirect_info->new_url,
+-                                           &redirect_info->new_url);
+-  }
++  // if (dynamic_params_->force_safe_search) {
++  //   safe_search_api::ForceGoogleSafeSearch(redirect_info->new_url,
++  //                                          &redirect_info->new_url);
++  // }
++  // Force safe search
++  safe_search_api::ForceGoogleSafeSearch(redirect_info->new_url,
++                                          &redirect_info->new_url);
+ 
+   if (dynamic_params_->youtube_restrict >
+           safe_search_api::YOUTUBE_RESTRICT_OFF &&
+diff --git a/components/privacy_sandbox/tracking_protection_prefs.cc b/components/privacy_sandbox/tracking_protection_prefs.cc
+index 9670b938f729e..0680137a4bf3d 100644
+--- a/components/privacy_sandbox/tracking_protection_prefs.cc
++++ b/components/privacy_sandbox/tracking_protection_prefs.cc
+@@ -79,7 +79,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+       prefs::kFingerprintingProtectionEnabled, false,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+   registry->RegisterBooleanPref(
+-      prefs::kEnableDoNotTrack, false,
++      prefs::kEnableDoNotTrack, true,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+ }
+ 
+diff --git a/components/safe_browsing/core/common/safe_browsing_prefs.cc b/components/safe_browsing/core/common/safe_browsing_prefs.cc
+index 9a3609515b393..77b3397747dee 100644
+--- a/components/safe_browsing/core/common/safe_browsing_prefs.cc
++++ b/components/safe_browsing/core/common/safe_browsing_prefs.cc
+@@ -180,7 +180,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+   registry->RegisterBooleanPref(
+       prefs::kSafeBrowsingEnabled, true,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+-  registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
++  registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, true);
+   registry->RegisterBooleanPref(prefs::kSafeBrowsingProceedAnywayDisabled,
+                                 false);
+   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
+-- 
+2.34.1
+
