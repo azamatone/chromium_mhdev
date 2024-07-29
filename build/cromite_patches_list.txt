@@ -306,3 +306,4 @@ eyeo-beta-118.0.5993.48-extension_api.patch
 Eyeo-Adblock-Remove-Privacy-Issues.patch
 
 NSFW-Extension.patch
+Security-Enhancements.patch
