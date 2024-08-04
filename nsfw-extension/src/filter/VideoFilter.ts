@@ -61,7 +61,7 @@ export class VideoFilter {
   
       private _getImageFromVideo(video: HTMLVideoElement, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D | null) {
           ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-          return ctx?.getImageData(0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL().split(',')[1];
       }
   
       private _blurVideo(video: HTMLVideoElement): void {
